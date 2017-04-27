@@ -13,6 +13,6 @@ import java.sql.SQLException;
 public class CollectInfoCommand extends Command {
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
-        return false;//todo implement it
+        return false;// implement it
     }
 }

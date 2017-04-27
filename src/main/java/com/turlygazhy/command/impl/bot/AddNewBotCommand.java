@@ -29,7 +29,7 @@ public class AddNewBotCommand extends Command {
         switch (wt) {
             case BOT_NAME:
                 name = updateMessageText;
-                sendMessage(4, chatId, bot); //todo add inline link 'what is token'
+                sendMessage(4, chatId, bot);
                 wt = WaitingType.BOT_TOKEN;
                 return false;
             case BOT_TOKEN:

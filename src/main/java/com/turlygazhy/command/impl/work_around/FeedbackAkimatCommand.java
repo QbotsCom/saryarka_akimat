@@ -6,6 +6,7 @@ import com.turlygazhy.command.impl.work_around.entity.Category;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
+import com.turlygazhy.exception.CannotHandleUpdateException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
@@ -41,13 +42,16 @@ public class FeedbackAkimatCommand extends Command {
         } else {
             updateMessageText = updateMessage.getText();
         }
+        String chooseCategory = messageDao.getMessageText(2);
+        String prev = messageDao.getMessageText(3);
+        String next = messageDao.getMessageText(4);
         if (wt == null) {
             chatId = updateMessage.getChatId();
             categories = categoriesDao.selectAll();
             shownCategoriesList++;
             bot.sendMessage(new SendMessage()
                     .setChatId(chatId)
-                    .setText("Choose category")//todo перевести
+                    .setText(chooseCategory)
                     .setReplyMarkup(getCategoriesKeyboard())
             );
             wt = WaitingType.CATEGORY;
@@ -55,20 +59,20 @@ public class FeedbackAkimatCommand extends Command {
         }
         switch (wt) {
             case CATEGORY:
-                if (updateMessageText.equals("prev")) {
+                if (updateMessageText.equals(prev)) {
                     shownCategoriesList--;
                     bot.editMessageText(new EditMessageText()
-                            .setText("Choose category")
+                            .setText(chooseCategory)
                             .setChatId(chatId)
                             .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard())
                             .setMessageId(updateMessage.getMessageId())
                     );
                     return false;
                 }
-                if (updateMessageText.equals("next")) {
+                if (updateMessageText.equals(next)) {
                     shownCategoriesList++;
                     bot.editMessageText(new EditMessageText()
-                            .setText("Choose category")//todo translate
+                            .setText(chooseCategory)
                             .setChatId(chatId)
                             .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard())
                             .setMessageId(updateMessage.getMessageId())
@@ -81,27 +85,39 @@ public class FeedbackAkimatCommand extends Command {
                 } catch (Exception e) {
                     category = findChild(updateMessageText);
                 }
+                if (category.getAfterText() != null) {
+                    sendMessage(category.getAfterText(), chatId, bot);
+                }
                 if (category.hasChild()) {
                     bot.sendMessage(new SendMessage()
                             .setChatId(chatId)
-                            .setText("Choose child")//todo translate
+                            .setText(chooseCategory)
                             .setReplyMarkup(getCategoryKeyboard(category))
                     );
                     childs = category.getChilds();
                     return false;
                 }
                 ticket.setCategory(category);
-                sendMessage("write text", chatId, bot);
+                sendMessage(messageDao.getMessageText(5), chatId, bot);//send text
                 wt = WaitingType.TEXT;
                 return false;
             case TEXT:
                 ticket.setText(updateMessageText);
-                sendMessage("Отправьте фото", chatId, bot);
+                sendMessage(messageDao.getMessageText(6), chatId, bot);//send photo
                 wt = WaitingType.PHOTO;
                 return false;
             case PHOTO:
-                ticket.setPhoto(updateMessage.getPhoto().get(updateMessage.getPhoto().size() - 1).getFileId());
-                sendMessage("thank you, ticket created", chatId, bot);
+                if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(7))) {//no photo
+                    sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
+                    sendTicket(ticket, bot);
+                    return false;
+                }
+                try {
+                    ticket.setPhoto(updateMessage.getPhoto().get(updateMessage.getPhoto().size() - 1).getFileId());
+                } catch (Exception e) {
+                    throw new CannotHandleUpdateException();
+                }
+                sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
                 sendTicket(ticket, bot);
                 return false;
         }
@@ -236,16 +252,26 @@ public class FeedbackAkimatCommand extends Command {
         }
 
         if (shownCategoriesList > 1) {
+            String prev = null;
+            try {
+                prev = messageDao.getMessageText(3);
+            } catch (SQLException ignored) {
+            }
             InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText("prev");//todo translate
-            button.setCallbackData("prev");//todo translate
+            button.setText(prev);
+            button.setCallbackData(prev);
             lastRow.add(button);
         }
 
         if (!last) {
             InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText("next");
-            button.setCallbackData("next");
+            String next = null;
+            try {
+                next = messageDao.getMessageText(4);
+            } catch (SQLException ignored) {
+            }
+            button.setText(next);
+            button.setCallbackData(next);
             lastRow.add(button);
         }
 

@@ -35,14 +35,14 @@ public class AddShowInfoButtonCommand extends Command {
             updateMessageText = updateMessage.getText();
         }
         if (wt == null) {
-            chatId = updateMessage.getChatId();//todo здесь как сообщ вставим „этот текст можно изменить в админке„
-            sendMessage(17, chatId, bot);//todo если это первая кнопка в мэйне то не спрашивать роу
+            chatId = updateMessage.getChatId();// здесь как сообщ вставим „этот текст можно изменить в админке„
+            sendMessage(17, chatId, bot);//если это первая кнопка в мэйне то не спрашивать роу
             addButton.setMessageText(messageDao.getMessageText(Const.CHANGE_THIS_IN_ADMIN_MESSAGE_ID));
             wt = WaitingType.IS_NEW_ROW;
             return false;
         }
         switch (wt) {
-            case IS_NEW_ROW://todo is new row нужно вынести на ступень выше
+            case IS_NEW_ROW:// is new row нужно вынести на ступень выше
                 boolean correctAnswer = false;
                 if (updateMessageText.equals(buttonDao.getButtonText(10))) {
                     addButton.setNewRow(true);

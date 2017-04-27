@@ -60,7 +60,7 @@ public class MyBotsCommand extends Command {
                 com.turlygazhy.entity.Message chooseBotMessage = messageDao.getMessage(8);
                 String text = chooseBotMessage.getSendMessage().getText() + "\n";
                 for (Bot bot1 : bots) {
-                    text = text + "\n" + ID_PREFIX + bot1.getId() + " " + bot1.getBotUsername();//todo inline buttons will be better
+                    text = text + "\n" + ID_PREFIX + bot1.getId() + " " + bot1.getBotUsername();
                 }
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
@@ -116,7 +116,7 @@ public class MyBotsCommand extends Command {
                     wt = WaitingType.BOT_CHANGE_ACTION;
                     return false;
                 } catch (Exception e) {
-                    sendMessage(10, chatId, bot);//todo что за 10
+                    sendMessage(10, chatId, bot);
                     return false;
                 }
             case BOT_CHANGE_ACTION:
@@ -128,7 +128,7 @@ public class MyBotsCommand extends Command {
                     return false;
                 }
                 if (updateMessageText.equals(changePlaces)) {
-                    //todo implement
+                    // implement
                 }
                 if (updateMessageText.startsWith(change)) {
                     String buttonNameForChange = updateMessageText.replace(change, "").trim();
@@ -137,10 +137,10 @@ public class MyBotsCommand extends Command {
                     } catch (CommandNotFoundException e) {
                         throw new RuntimeException(e);
                     }
-                    //todo implement
-                    /*todo берем тип команды, берем что можно для этого типа изменить
+                    // implement
+                    /* берем тип команды, берем что можно для этого типа изменить
                     * предоставляем список*/
-                    /*todo как обезопасить, чтоб другие не меняли твои кнопки, к кнопке id бота прикрепить надо
+                    /* как обезопасить, чтоб другие не меняли твои кнопки, к кнопке id бота прикрепить надо
                     * если чел может менять бота значить может менять и кнопку*/
                 }
                 sendMessage(7, chatId, bot);
@@ -148,7 +148,7 @@ public class MyBotsCommand extends Command {
             case NEW_BUTTON_NAME:
                 addButton.setName(updateMessageText);
                 bot.sendMessage(new SendMessage()
-                        .setText(messageDao.getMessageText(12) + CommandType.getCommandList())//todo не хватает урла: что это такое
+                        .setText(messageDao.getMessageText(12) + CommandType.getCommandList())// не хватает урла: что это такое
                         .setChatId(chatId)
                 );
                 wt = WaitingType.COMMAND_TYPE;
@@ -172,7 +172,7 @@ public class MyBotsCommand extends Command {
                 try {
                     sendMainForChange(bot);
                 } catch (NoMainKeyboardException e) {
-                    //todo по идее не должно падать
+                    //по идее не должно падать
                 }
                 return false;
         }

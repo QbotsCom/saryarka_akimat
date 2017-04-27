@@ -96,7 +96,7 @@ public class InitCollectInfoCommand extends Command {
         if (infos.size() > 0) {
             sendInfoText = sendInfoText + " or click " + ENOUGH;
         }
-        sendMessage(sendInfoText, chatId, bot);//todo это вопрос который выйдет при сборе инфо
+        sendMessage(sendInfoText, chatId, bot);//это вопрос который выйдет при сборе инфо
         wt = WaitingType.INFO_NAME;
     }
 

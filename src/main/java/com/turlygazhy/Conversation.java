@@ -46,29 +46,33 @@ public class Conversation {
         }
 
         if (inputtedText == null) {
-            Contact contact = updateMessage.getContact();//todo check user id and contact id
+            Contact contact = updateMessage.getContact();
             if (contact != null) {
-                String phoneNumber = contact.getPhoneNumber();
+                Integer contactUserID = contact.getUserID();//todo i'm here test it
+                Integer fromId = update.getMessage().getFrom().getId();
+                if (contactUserID.equals(fromId)) {
+                    String phoneNumber = contact.getPhoneNumber();
 //                String phoneNumber = "77016028001";
-                boolean exist = userDao.checkPhoneNumber(phoneNumber);
-                if (exist) {
-                    User user = userDao.setChatId(phoneNumber, updateMessage.getChatId());
-                    String messageText = messageDao.getMessageText(1);
-                    List<Category> categories = categoriesDao.selectAll();
-                    for (Category category : categories) {
-                        messageText = checkExecutor(user, messageText, category);
-                        List<Category> childs = category.getChilds();
-                        if (childs != null && childs.size() > 0) {
-                            for (Category child : childs) {
-                                messageText = checkExecutor(user, messageText, child);
+                    boolean exist = userDao.checkPhoneNumber(phoneNumber);
+                    if (exist) {
+                        User user = userDao.setChatId(phoneNumber, updateMessage.getChatId());
+                        String messageText = messageDao.getMessageText(1);
+                        List<Category> categories = categoriesDao.selectAll();
+                        for (Category category : categories) {
+                            messageText = checkExecutor(user, messageText, category);
+                            List<Category> childs = category.getChilds();
+                            if (childs != null && childs.size() > 0) {
+                                for (Category child : childs) {
+                                    messageText = checkExecutor(user, messageText, child);
+                                }
                             }
                         }
+                        bot.sendMessage(new SendMessage()
+                                .setChatId(updateMessage.getChatId())
+                                .setText(messageText)
+                        );
+                        return;
                     }
-                    bot.sendMessage(new SendMessage()
-                            .setChatId(updateMessage.getChatId())
-                            .setText(messageText)
-                    );
-                    return;
                 }
             }
         }
