@@ -2,9 +2,12 @@ package com.turlygazhy.command.impl.archive;
 
 import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
-import com.turlygazhy.entity.Message;
-import com.turlygazhy.entity.MessageElement;
+import com.turlygazhy.entity.Ticket;
+import com.turlygazhy.entity.WaitingType;
+import com.turlygazhy.exception.CannotHandleUpdateException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
@@ -14,79 +17,65 @@ import java.sql.SQLException;
  * Created by user on 1/5/17.
  */
 public class InformAdminCommand extends Command {
-    private String photo;
-    private boolean photoAsked = false;
-    private String text;
-    private MessageElement expectedMessageElement;
+    private Ticket ticket = new Ticket();
 
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
         org.telegram.telegrambots.api.objects.Message updateMessage = update.getMessage();
+        String updateMessageText;
         if (updateMessage == null) {
-            updateMessage = update.getCallbackQuery().getMessage();
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            updateMessage = callbackQuery.getMessage();
+            updateMessageText = callbackQuery.getData();
+        } else {
+            updateMessageText = updateMessage.getText();
         }
-        if (expectedMessageElement != null) {
-            switch (expectedMessageElement) {
-                case PHOTO:
-                    photo = updateMessage.getPhoto().get(updateMessage.getPhoto().size() - 1).getFileId();
-                    expectedMessageElement = null;
-                    break;
-                case TEXT:
-                    text = updateMessage.getText();
-                    expectedMessageElement = null;
-                    break;
-            }
-        }
-
-        Long chatId = updateMessage.getChatId();
-        if (text == null) {
-            Message message = messageDao.getMessage(12);
-            SendMessage sendMessage = message.getSendMessage()
-                    .setChatId(chatId)
-                    .setReplyMarkup(keyboardMarkUpDao.select(message.getKeyboardMarkUpId(), bot.getId()));
-
-            bot.sendMessage(sendMessage);
-            expectedMessageElement = MessageElement.TEXT;
+        if (wt == null) {
+            chatId = updateMessage.getChatId();
+            sendMessage(messageDao.getMessageText(5), chatId, bot);//send text
+            wt = WaitingType.TEXT;
             return false;
         }
-
-        if (photo == null) {
-            if (!photoAsked) {
-                photoAsked = true;
-                sendMessage(13, chatId, bot);
+        switch (wt) {
+            case TEXT:
+                ticket.setText(updateMessageText);
+                sendMessage(6, chatId, bot);//send photo
+                wt = WaitingType.PHOTO;
                 return false;
-            } else {
-                String text = update.getCallbackQuery().getData();
-                if (text.equals(buttonDao.getButtonText(17))) {
-                    Message message = messageDao.getMessage(14);
-                    SendMessage sendMessage = message.getSendMessage()
-                            .setChatId(chatId)
-                            .setReplyMarkup(keyboardMarkUpDao.select(message.getKeyboardMarkUpId(), bot.getId()));
-
-                    bot.sendMessage(sendMessage);
-                    expectedMessageElement = MessageElement.PHOTO;
+            case PHOTO:
+                if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(7))) {//no photo
+                    sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
+                    sendTicket(ticket, bot);
                     return false;
                 }
-                if (text.equals(buttonDao.getButtonText(18))) {
-                    sendMessageToAdmin(15, bot);
-                    sendMessageToAdmin(this.text, bot);
-                    sendMessage(16, chatId, bot);
-                    photo = null;
-                    text = null;
-                    expectedMessageElement = null;
-                    return true;
+                try {
+                    ticket.setPhoto(updateMessage.getPhoto().get(updateMessage.getPhoto().size() - 1).getFileId());
+                } catch (Exception e) {
+                    throw new CannotHandleUpdateException();
                 }
-            }
+                sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
+                sendTicket(ticket, bot);
+                return false;
         }
+        return false;
+    }
 
-        sendMessageToAdmin(15, bot);
-        sendPhotoToAdmin(photo, bot);
-        sendMessageToAdmin(text, bot);
-        sendMessage(16, chatId, bot);
+    private void sendTicket(Ticket ticket, Bot bot) throws TelegramApiException, SQLException {
+        long chatId = 271036459L;
+        sendTicket(bot, chatId);
 
-        photo = null;
-        text = null;
-        expectedMessageElement = null;
-        return true;
+    }
+
+    private void sendTicket(Bot bot, long chatId) throws TelegramApiException, SQLException {
+        bot.sendMessage(new SendMessage()
+                .setChatId(chatId)
+                .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
+        );
+        if (ticket.getPhoto() != null) {
+            bot.sendPhoto(new SendPhoto()
+                    .setPhoto(ticket.getPhoto())
+                    .setChatId(chatId)
+            );
+        }
     }
 }
