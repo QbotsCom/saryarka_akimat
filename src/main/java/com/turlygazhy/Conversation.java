@@ -48,11 +48,10 @@ public class Conversation {
         if (inputtedText == null) {
             Contact contact = updateMessage.getContact();
             if (contact != null) {
-                Integer contactUserID = contact.getUserID();//todo i'm here test it
+                Integer contactUserID = contact.getUserID();
                 Integer fromId = update.getMessage().getFrom().getId();
-                if (contactUserID.equals(fromId)) {
+                if (contactUserID != null && contactUserID.equals(fromId)) {
                     String phoneNumber = contact.getPhoneNumber();
-//                String phoneNumber = "77016028001";
                     boolean exist = userDao.checkPhoneNumber(phoneNumber);
                     if (exist) {
                         User user = userDao.setChatId(phoneNumber, updateMessage.getChatId());

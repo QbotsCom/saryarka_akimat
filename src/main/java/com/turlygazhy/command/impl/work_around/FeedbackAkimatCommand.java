@@ -103,7 +103,7 @@ public class FeedbackAkimatCommand extends Command {
                 return false;
             case TEXT:
                 ticket.setText(updateMessageText);
-                sendMessage(messageDao.getMessageText(6), chatId, bot);//send photo
+                sendMessage(6, chatId, bot);//send photo
                 wt = WaitingType.PHOTO;
                 return false;
             case PHOTO:
@@ -130,6 +130,8 @@ public class FeedbackAkimatCommand extends Command {
         String executorsIds = ticket.getCategory().getExecutorsIds();
         for (String executorId : executorsIds.split(",")) {
             if (executorId.contains(":")) {
+                String[] severalExecutorsIds = executorId.split(":");
+                executorId = severalExecutorsIds[0];//todo hardcode
                 //todo implement it
             }
             User user = userDao.select(Integer.parseInt(executorId));
@@ -150,11 +152,11 @@ public class FeedbackAkimatCommand extends Command {
         }
     }
 
-    private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException {
+    private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
         bot.sendMessage(new SendMessage()
-                .setChatId(chatId)
-                .setText("new ticket" + "\n" + ticket.getText())
-                .setReplyMarkup(getInprogKeyboard())
+                        .setChatId(chatId)
+                        .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
+//                .setReplyMarkup(getInprogKeyboard())
         );
         if (ticket.getPhoto() != null) {
             bot.sendPhoto(new SendPhoto()
