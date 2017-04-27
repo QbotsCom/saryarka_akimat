@@ -81,14 +81,14 @@ public class MemberDao {
     }
 
     public void updateNishaByUserId(Integer userId, String nisha) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update member set nisha = ? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId member set nisha = ? where user_id=?");
         ps.setString(1, nisha);
         ps.setInt(2, userId);
         ps.execute();
     }
 
     public void updateNavikiByUserId(Integer userId, String naviki) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update member set naviki = ? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId member set naviki = ? where user_id=?");
         ps.setString(1, naviki);
         ps.setInt(2, userId);
         ps.execute();
@@ -172,7 +172,7 @@ public class MemberDao {
     }
 
     public void giveAccess(Integer userId, Integer groupId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update member set has_access=?, group_id=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId member set has_access=?, group_id=? where user_id=?");
         ps.setBoolean(1, true);
         ps.setInt(2, groupId);
         ps.setInt(3, userId);

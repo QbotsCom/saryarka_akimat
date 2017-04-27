@@ -26,11 +26,6 @@ public class Ticket {
         return text;
     }
 
-    public long getChatId() {
-        return category.getChatId();
-    }
-
-
     public void setPhoto(String photo) {
         this.photo = photo;
     }

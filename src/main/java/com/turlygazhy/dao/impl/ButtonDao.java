@@ -73,7 +73,7 @@ public class ButtonDao extends AbstractDao {
     }
 
     public void updateButtonText(int buttonId, String newText) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update button set text=? where id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId button set text=? where id=?");
         ps.setString(1, newText);
         ps.setInt(2, buttonId);
         ps.execute();

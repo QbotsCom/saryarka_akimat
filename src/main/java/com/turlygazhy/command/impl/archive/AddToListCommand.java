@@ -34,17 +34,17 @@ public class AddToListCommand extends Command {
 //        if (expectedMessageElement != null) {
 //            switch (expectedMessageElement) {
 //                case PHOTO:
-//                    photo = update.getMessage().getPhoto().get(update.getMessage().getPhoto().size() - 1).getFileId();
+//                    photo = setChatId.getMessage().getPhoto().get(setChatId.getMessage().getPhoto().size() - 1).getFileId();
 //                    expectedMessageElement = null;
 //                    break;
 //                case TEXT:
-//                    text = update.getMessage().getName();
+//                    text = setChatId.getMessage().getName();
 //                    expectedMessageElement = null;
 //                    break;
 //            }
 //        }
 //
-//        Long chatId = update.getMessage().getChatId();
+//        Long chatId = setChatId.getMessage().getChatId();
 //        if (text == null) {
 //            Message message = messageDao.getMessage(27);
 //            SendMessage sendMessage = message.getSendMessage()
@@ -62,7 +62,7 @@ public class AddToListCommand extends Command {
 //                sendMessage(101, chatId, bot);
 //                return false;
 //            } else {
-//                String text = update.getMessage().getName();
+//                String text = setChatId.getMessage().getName();
 //                if (text.equals(constDao.select(1))) {
 //                    Message message = messageDao.getMessage(133);
 //                    SendMessage sendMessage = message.getSendMessage()

@@ -137,7 +137,7 @@ public class GoalDao {
 
     public void inputResult(int userResultId, int completed) throws SQLException {
         int completedDB = selectCompleted(userResultId);
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT set COMPLETED=? where id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT set COMPLETED=? where id=?");
         ps.setInt(1, completed + completedDB);
         ps.setInt(2, userResultId);
         ps.execute();
@@ -196,7 +196,7 @@ public class GoalDao {
     }
 
     public void setBookName(Integer userId, String bookName) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT_READING set book_name=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT_READING set book_name=? where user_id=?");
         ps.setString(1, bookName);
         ps.setInt(2, userId);
         ps.execute();
@@ -204,7 +204,7 @@ public class GoalDao {
 
     public UserReadingResult inputReadingResult(Integer userId, int completed) throws SQLException {
         int completedDB = selectReadingCompleted(userId);
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT_READING set COMPLETED=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT_READING set COMPLETED=? where user_id=?");
         ps.setInt(1, completed + completedDB);
         ps.setInt(2, userId);
         ps.execute();
@@ -221,7 +221,7 @@ public class GoalDao {
     }
 
     public void resetReading(Integer userId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT_READING set book_name=?, SUMMARY=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT_READING set book_name=?, SUMMARY=? where user_id=?");
         ps.setString(1, "");
         ps.setString(2, "");
         ps.setInt(3, userId);
@@ -231,7 +231,7 @@ public class GoalDao {
     public void addThesis(String thesis, Integer userId) throws SQLException {
         UserReadingResult readingResult = getReadingResultForUser(userId);
         String thesisDB = readingResult.getThesis();
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT_READING set SUMMARY=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT_READING set SUMMARY=? where user_id=?");
         ps.setString(1, thesisDB + "\n\n" + thesis);
         ps.setInt(2, userId);
         ps.execute();
@@ -247,7 +247,7 @@ public class GoalDao {
     }
 
     public void update(Goal goal) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update GOAL set NAME=?, AIM=?, WITH_TIME_LIMIT=?, START_TIME=?, END_TIME=? where id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId GOAL set NAME=?, AIM=?, WITH_TIME_LIMIT=?, START_TIME=?, END_TIME=? where id=?");
         ps.setString(1, goal.getName());
         ps.setInt(2, goal.getAim());
         ps.setBoolean(3, goal.isTimeLimit());
@@ -258,13 +258,13 @@ public class GoalDao {
     }
 
     public void changeBookAim(int newAim) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT_READING set aim=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT_READING set aim=?");
         ps.setInt(1, newAim);
         ps.execute();
     }
 
     public void resetResults(Integer userId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update USER_RESULT set completed=? where user_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId USER_RESULT set completed=? where user_id=?");
         ps.setInt(1, 0);
         ps.setInt(2, userId);
         ps.execute();

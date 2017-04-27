@@ -4,6 +4,7 @@ import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
 import com.turlygazhy.command.impl.work_around.entity.Category;
 import com.turlygazhy.entity.Ticket;
+import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
@@ -107,11 +108,33 @@ public class FeedbackAkimatCommand extends Command {
         return false;
     }
 
-    private void sendTicket(Ticket ticket, Bot bot) throws TelegramApiException {
-        long chatId = ticket.getChatId();
-        if (chatId == 0) {
-            chatId = 271036459L;//todo hardcode
+    private void sendTicket(Ticket ticket, Bot bot) throws TelegramApiException, SQLException {
+        List<Long> chats = new ArrayList<>();
+        List<String> numbersWithoutChat = new ArrayList<>();
+        String executorsIds = ticket.getCategory().getExecutorsIds();
+        for (String executorId : executorsIds.split(",")) {
+            if (executorId.contains(":")) {
+                //todo implement it
+            }
+            User user = userDao.select(Integer.parseInt(executorId));
+            long chatId = user.getChatId();
+            if (chatId == 0) {
+                numbersWithoutChat.add(user.getPhoneNumber());
+                continue;
+            }
+            chats.add(chatId);
         }
+        if (chats.size() == 0) {
+            long chatId = 271036459L;
+            sendTicket(bot, chatId, numbersWithoutChat);
+            return;
+        }
+        for (Long chat : chats) {
+            sendTicket(bot, chat, numbersWithoutChat);
+        }
+    }
+
+    private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException {
         bot.sendMessage(new SendMessage()
                 .setChatId(chatId)
                 .setText("new ticket" + "\n" + ticket.getText())
@@ -121,6 +144,16 @@ public class FeedbackAkimatCommand extends Command {
             bot.sendPhoto(new SendPhoto()
                     .setPhoto(ticket.getPhoto())
                     .setChatId(chatId)
+            );
+        }
+        if (numbersWithoutChat.size() > 0) {
+            String warning = "This numbers don't have bot:";
+            for (String number : numbersWithoutChat) {
+                warning = warning + "\n" + number;
+            }
+            bot.sendMessage(new SendMessage()
+                    .setChatId(chatId)
+                    .setText(warning)
             );
         }
     }

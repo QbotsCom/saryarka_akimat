@@ -25,7 +25,7 @@ public class ConstDao {
     }
 
     public void update(int id, String text) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update const set text = ? where id = ?");
+        PreparedStatement ps = connection.prepareStatement("setChatId const set text = ? where id = ?");
         ps.setString(1, text);
         ps.setInt(2, id);
         ps.execute();

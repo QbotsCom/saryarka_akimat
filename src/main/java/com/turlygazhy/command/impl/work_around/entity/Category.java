@@ -11,7 +11,8 @@ public class Category {
     private String name;
     private boolean main;
     private List<Category> childs;
-    private long chatId;
+    private String executorsIds;
+    private String afterText;
 
     public void setId(int id) {
         this.id = id;
@@ -50,11 +51,20 @@ public class Category {
         return childs != null;
     }
 
-    public long getChatId() {
-        return chatId;
+    public void setExecutorsIds(String executorsIds) {
+        this.executorsIds = executorsIds;
     }
 
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
+    public String getExecutorsIds() {
+        return executorsIds;
+    }
+
+
+    public void setAfterText(String afterText) {
+        this.afterText = afterText;
+    }
+
+    public String getAfterText() {
+        return afterText;
     }
 }

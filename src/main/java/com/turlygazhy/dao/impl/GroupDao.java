@@ -40,7 +40,7 @@ public class GroupDao {
         rs.next();
         String titleDB = rs.getString(2);
         if (!titleDB.equals(title)) {
-            PreparedStatement psUpdate = connection.prepareStatement("update groups set title=? where user_id=?");
+            PreparedStatement psUpdate = connection.prepareStatement("setChatId groups set title=? where user_id=?");
             psUpdate.setString(1, title);
             psUpdate.setLong(2, chatId);
             psUpdate.execute();
@@ -56,7 +56,7 @@ public class GroupDao {
     }
 
     public void giveAccess(Long chatId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update groups set can_work=? where chat_id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId groups set can_work=? where chat_id=?");
         ps.setBoolean(1, true);
         ps.setLong(2, chatId);
         ps.execute();

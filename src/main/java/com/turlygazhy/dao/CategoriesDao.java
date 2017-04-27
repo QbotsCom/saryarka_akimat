@@ -17,6 +17,8 @@ public class CategoriesDao {
     public static final int ID_COLUMN_INDEX = 1;
     public static final int NAME_COLUMN_INDEX = 2;
     public static final int CHAILD_IDS_COLUMN_INDEX = 4;
+    public static final int EXECUTORS_IDS_COLUMN_INDEX = 5;
+    public static final int AFTER_TEXT_COLUMN_INDEX = 6;
     private final Connection connection;
 
     public CategoriesDao(Connection connection) {
@@ -48,6 +50,8 @@ public class CategoriesDao {
         category.setName(rs.getString(NAME_COLUMN_INDEX));
         category.setMain(rs.getBoolean(IS_MAIN_COLUMN_INDEX));
         String childIds = rs.getString(CHAILD_IDS_COLUMN_INDEX);
+        category.setExecutorsIds(rs.getString(EXECUTORS_IDS_COLUMN_INDEX));
+        category.setAfterText(rs.getString(AFTER_TEXT_COLUMN_INDEX));
         if (!childIds.equals("0")) {
             String[] child = childIds.split(",");
             List<Category> childs = new ArrayList<>();

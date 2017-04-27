@@ -1,23 +1,27 @@
 package com.turlygazhy;
 
 import com.turlygazhy.command.Command;
+import com.turlygazhy.command.impl.work_around.entity.Category;
+import com.turlygazhy.dao.CategoriesDao;
 import com.turlygazhy.dao.DaoFactory;
-import com.turlygazhy.dao.impl.ButtonDao;
 import com.turlygazhy.dao.impl.KeyboardMarkUpDao;
 import com.turlygazhy.dao.impl.MessageDao;
+import com.turlygazhy.dao.impl.UserDao;
 import com.turlygazhy.entity.Message;
-import com.turlygazhy.entity.WaitingType;
-import com.turlygazhy.exception.CommandNotFoundException;
+import com.turlygazhy.entity.User;
 import com.turlygazhy.exception.CannotHandleUpdateException;
+import com.turlygazhy.exception.CommandNotFoundException;
 import com.turlygazhy.exception.NoMainKeyboardException;
 import com.turlygazhy.service.CommandService;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Contact;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Yerassyl_Turlygazhy on 11/27/2016.
@@ -27,12 +31,9 @@ public class Conversation {
     private Command command;
     private DaoFactory factory = DaoFactory.getFactory();
     private MessageDao messageDao = factory.getMessageDao();
-    private ButtonDao buttonDao = factory.getButtonDao();
     private KeyboardMarkUpDao keyboardMarkUpDao = factory.getKeyboardMarkUpDao();
-
-    private WaitingType waitingType;
-    private String nisha;
-    private String naviki;
+    private UserDao userDao = factory.getUserDao();
+    private CategoriesDao categoriesDao = factory.getCategoriesDao();
 
     public void handleUpdate(Update update, Bot bot) throws SQLException, TelegramApiException {
         org.telegram.telegrambots.api.objects.Message updateMessage = update.getMessage();
@@ -42,6 +43,34 @@ public class Conversation {
             updateMessage = update.getCallbackQuery().getMessage();
         } else {
             inputtedText = updateMessage.getText();
+        }
+
+        if (inputtedText == null) {
+            Contact contact = updateMessage.getContact();//todo check user id and contact id
+            if (contact != null) {
+                String phoneNumber = contact.getPhoneNumber();
+//                String phoneNumber = "77016028001";
+                boolean exist = userDao.checkPhoneNumber(phoneNumber);
+                if (exist) {
+                    User user = userDao.setChatId(phoneNumber, updateMessage.getChatId());
+                    String messageText = messageDao.getMessageText(1);
+                    List<Category> categories = categoriesDao.selectAll();
+                    for (Category category : categories) {
+                        messageText = checkExecutor(user, messageText, category);
+                        List<Category> childs = category.getChilds();
+                        if (childs != null && childs.size() > 0) {
+                            for (Category child : childs) {
+                                messageText = checkExecutor(user, messageText, child);
+                            }
+                        }
+                    }
+                    bot.sendMessage(new SendMessage()
+                            .setChatId(updateMessage.getChatId())
+                            .setText(messageText)
+                    );
+                    return;
+                }
+            }
         }
 
         try {
@@ -65,6 +94,29 @@ public class Conversation {
         if (commandFinished) {
             command = null;
         }
+    }
+
+    private String checkExecutor(User user, String messageText, Category category) {
+        String executorsIds = category.getExecutorsIds();
+        if (executorsIds != null) {
+            String[] executorIds = executorsIds.split(",");
+            for (String executorId : executorIds) {
+                if (executorId.contains(":")) {
+                    String[] splitId = executorId.split(":");
+                    for (String id : splitId) {
+                        if (id.equals(String.valueOf(user.getId()))) {
+                            messageText = messageText + "\n" + category.getName();
+                            break;
+                        }
+                    }
+                }
+                if (executorId.equals(String.valueOf(user.getId()))) {
+                    messageText = messageText + "\n" + category.getName();
+                    break;
+                }
+            }
+        }
+        return messageText;
     }
 
     private void showMain(Update update, Bot bot) throws SQLException, TelegramApiException {

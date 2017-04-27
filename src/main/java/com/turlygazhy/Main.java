@@ -26,8 +26,8 @@ public class Main {
 
         telegramBotsApi = new TelegramBotsApi();
 //        Bot bot = new Bot("Mother bot", "325789458:AAEGL-ERbDULJI8uGWo_grOcPbxnkzExNec", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
-        Bot bot = new Bot("Mother bot test", "330782553:AAERpMlflu7ELyY29SoPSBwByGXIlwKXwsQ", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
-        register(bot);
+//        Bot bot = new Bot("Mother bot test", "330782553:AAERpMlflu7ELyY29SoPSBwByGXIlwKXwsQ", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
+//        register(bot);
         try {
             List<Bot> bots = DaoFactory.getFactory().getBotsDao().selectAll();
             for (Bot bot1 : bots) {

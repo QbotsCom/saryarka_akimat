@@ -168,7 +168,7 @@ public class KeyboardMarkUpDao extends AbstractDao {
     }
 
     public void update(KeyboardDB keyboardDB) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("update KEYBOARD set BUTTON_IDS=?, INLINE=?, COMMENT=? where id=?");
+        PreparedStatement ps = connection.prepareStatement("setChatId KEYBOARD set BUTTON_IDS=?, INLINE=?, COMMENT=? where id=?");
         ps.setString(1, keyboardDB.getButtonIds());
         ps.setBoolean(2, keyboardDB.isInline());
         ps.setString(3, keyboardDB.getComment());

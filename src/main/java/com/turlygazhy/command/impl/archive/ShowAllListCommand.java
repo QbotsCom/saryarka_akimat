@@ -13,9 +13,9 @@ import java.sql.SQLException;
 public class ShowAllListCommand extends Command {
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
-//        boolean admin = userDao.isAdmin(update.getMessage().getChatId());
+//        boolean admin = userDao.isAdmin(setChatId.getMessage().getChatId());
 //        ListDao listDao = factory.getListDao(getListName());
-//        Long chatId = update.getMessage().getChatId();
+//        Long chatId = setChatId.getMessage().getChatId();
 //        List<Message> messages = listDao.readAll();
 //        for (Message message : messages) {
 //            if (admin) {

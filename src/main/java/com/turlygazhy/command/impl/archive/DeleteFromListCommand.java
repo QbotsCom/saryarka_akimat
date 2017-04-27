@@ -16,14 +16,14 @@ public class DeleteFromListCommand extends Command {
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
 //        ListDao listDao = factory.getListDao(getListName());
-//        Long chatId = update.getMessage().getChatId();
+//        Long chatId = setChatId.getMessage().getChatId();
 //        if (!expectId) {
 //            sendMessage(64, chatId, bot);
 //            expectId = true;
 //            return false;
 //        } else {
 //            try {
-//                long id = Long.parseLong(update.getMessage().getName());
+//                long id = Long.parseLong(setChatId.getMessage().getName());
 //                boolean deleted = listDao.delete(id);
 //                if (!deleted) {
 //                    sendMessage(67, chatId, bot);
