@@ -49,12 +49,11 @@ public class FeedbackAkimatCommand extends Command {
             chatId = updateMessage.getChatId();
             categories = categoriesDao.selectAll();
             shownCategoriesList++;
-            bot.sendMessage(new SendMessage()
-                    .setChatId(chatId)
-                    .setText(chooseCategory)
-                    .setReplyMarkup(getCategoriesKeyboard())
-            );
-            wt = WaitingType.CATEGORY;
+            showCategories(bot, chooseCategory);
+            return false;
+        }
+        if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(19))) {//back
+            showCategories(bot, chooseCategory);
             return false;
         }
         switch (wt) {
@@ -83,7 +82,11 @@ public class FeedbackAkimatCommand extends Command {
                 try {
                     category = findCategory(updateMessageText);
                 } catch (Exception e) {
-                    category = findChild(updateMessageText);
+                    try {
+                        category = findChild(updateMessageText);
+                    } catch (NullPointerException e1) {
+                        throw new CannotHandleUpdateException();
+                    }
                 }
                 if (category.getAfterText() != null) {
                     sendMessage(category.getAfterText(), chatId, bot);
@@ -108,8 +111,8 @@ public class FeedbackAkimatCommand extends Command {
                 return false;
             case PHOTO:
                 if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(7))) {//no photo
-                    sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
-                    sendTicket(ticket, bot);
+                    sendTicket(bot);
+                    sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
                     return false;
                 }
                 try {
@@ -117,18 +120,36 @@ public class FeedbackAkimatCommand extends Command {
                 } catch (Exception e) {
                     throw new CannotHandleUpdateException();
                 }
-                sendMessage(messageDao.getMessageText(8), chatId, bot);//thank you, ticket created
-                sendTicket(ticket, bot);
+                sendTicket(bot);
+                sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
                 return false;
         }
         return false;
     }
 
-    private void sendTicket(Ticket ticket, Bot bot) throws TelegramApiException, SQLException {
+    private void showCategories(Bot bot, String chooseCategory) throws TelegramApiException {
+        bot.sendMessage(new SendMessage()
+                .setChatId(chatId)
+                .setText(chooseCategory)
+                .setReplyMarkup(getCategoriesKeyboard())
+        );
+        wt = WaitingType.CATEGORY;
+    }
+
+    private void sendTicket(Bot bot) throws TelegramApiException, SQLException {
         List<Long> chats = new ArrayList<>();
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
-        for (String executorId : executorsIds.split(",")) {
+        String[] executors = executorsIds.split(",");
+        if (executors.length >= 3) {
+            if (executors[2].contains(":")) {
+                executors[2] = executors[2].split(":")[0];
+            }
+            User user = userDao.select(Integer.parseInt(executors[2]));
+            ticket.setExecutorNumber(user.getPhoneNumber());
+            ticket.setExecutorFullName(user.getUserName());
+        }
+        for (String executorId : executors) {
             if (executorId.contains(":")) {
                 String[] severalExecutorsIds = executorId.split(":");
                 executorId = severalExecutorsIds[0];//todo hardcode
@@ -165,7 +186,7 @@ public class FeedbackAkimatCommand extends Command {
             );
         }
         if (numbersWithoutChat.size() > 0) {
-            String warning = "This numbers don't have bot:";
+            String warning = messageDao.getMessageText(10);//this person does not have bot
             for (String number : numbersWithoutChat) {
                 warning = warning + "\n" + number;
             }
@@ -200,9 +221,10 @@ public class FeedbackAkimatCommand extends Command {
         throw new RuntimeException("Cannot find category: " + updateMessageText);
     }
 
-    private ReplyKeyboard getCategoryKeyboard(Category category) {
+    private ReplyKeyboard getCategoryKeyboard(Category category) throws SQLException {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> lastRow = new ArrayList<>();
 
         for (Category child : category.getChilds()) {
             List<InlineKeyboardButton> row = new ArrayList<>();
@@ -214,6 +236,12 @@ public class FeedbackAkimatCommand extends Command {
             rows.add(row);
         }
 
+        InlineKeyboardButton back = new InlineKeyboardButton();
+        back.setText(buttonDao.getButtonText(19));
+        back.setCallbackData(buttonDao.getButtonText(19));
+        lastRow.add(back);
+
+        rows.add(lastRow);
         keyboard.setKeyboard(rows);
         return keyboard;
     }

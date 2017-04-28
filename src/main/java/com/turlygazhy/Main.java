@@ -26,16 +26,16 @@ public class Main {
 
         telegramBotsApi = new TelegramBotsApi();
 //        Bot bot = new Bot("Mother bot", "325789458:AAEGL-ERbDULJI8uGWo_grOcPbxnkzExNec", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
-//        Bot bot = new Bot("Mother bot test", "330782553:AAERpMlflu7ELyY29SoPSBwByGXIlwKXwsQ", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
-//        register(bot);
-        try {
-            List<Bot> bots = DaoFactory.getFactory().getBotsDao().selectAll();
-            for (Bot bot1 : bots) {
-                register(bot1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Bot bot = new Bot("Сарыарка акимат", "295957927:AAHtCvP5Gcc1kNCmYpgc7yor646ebinnNiQ", 109, YERASSYL_CHAT_ID);
+        register(bot);
+//        try {
+//            List<Bot> bots = DaoFactory.getFactory().getBotsDao().selectAll();
+//            for (Bot bot1 : bots) {
+//                register(bot1);
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

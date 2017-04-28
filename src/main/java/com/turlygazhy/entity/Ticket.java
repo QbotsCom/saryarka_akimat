@@ -9,6 +9,8 @@ public class Ticket {
     private Category category;
     private String text;
     private String photo;
+    private String executorNumber;
+    private String executorFullName;
 
     public void setCategory(Category category) {
         this.category = category;
@@ -32,5 +34,21 @@ public class Ticket {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public void setExecutorNumber(String executorNumber) {
+        this.executorNumber = executorNumber;
+    }
+
+    public String getExecutorNumber() {
+        return executorNumber;
+    }
+
+    public void setExecutorFullName(String executorFullName) {
+        this.executorFullName = executorFullName;
+    }
+
+    public String getExecutorFullName() {
+        return executorFullName;
     }
 }
