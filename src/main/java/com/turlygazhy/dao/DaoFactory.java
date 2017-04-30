@@ -104,4 +104,8 @@ public class DaoFactory {
     public CategoriesDao getCategoriesDao() {
         return new CategoriesDao(connection);
     }
+
+    public TicketDao getTicketDao() {
+        return new TicketDao(connection);
+    }
 }

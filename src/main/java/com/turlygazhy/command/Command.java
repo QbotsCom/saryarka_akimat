@@ -48,6 +48,7 @@ public abstract class Command {
     protected BotService botService = new BotService();
     protected VariablesDao variablesDao = factory.getVariablesDao();
     protected CategoriesDao categoriesDao = factory.getCategoriesDao();
+    protected TicketDao ticketDao = factory.getTicketDao();
 
 
     public long getId() {

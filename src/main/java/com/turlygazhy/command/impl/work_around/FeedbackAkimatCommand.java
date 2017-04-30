@@ -30,6 +30,7 @@ public class FeedbackAkimatCommand extends Command {
     private List<Category> childs;
     private int shownCategoriesList = 0;
     private Ticket ticket = new Ticket();
+    private Integer categoriesMessageId;
 
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
@@ -53,6 +54,7 @@ public class FeedbackAkimatCommand extends Command {
             return false;
         }
         if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(19))) {//back
+            deleteCategories(bot);
             showCategories(bot, chooseCategory);
             return false;
         }
@@ -87,16 +89,19 @@ public class FeedbackAkimatCommand extends Command {
                     } catch (NullPointerException e1) {
                         throw new CannotHandleUpdateException();
                     }
+                } finally {
+                    deleteCategories(bot);
                 }
                 if (category.getAfterText() != null) {
                     sendMessage(category.getAfterText(), chatId, bot);
                 }
                 if (category.hasChild()) {
-                    bot.sendMessage(new SendMessage()
+                    Message message = bot.sendMessage(new SendMessage()
                             .setChatId(chatId)
                             .setText(chooseCategory)
                             .setReplyMarkup(getCategoryKeyboard(category))
                     );
+                    categoriesMessageId = message.getMessageId();
                     childs = category.getChilds();
                     return false;
                 }
@@ -127,12 +132,25 @@ public class FeedbackAkimatCommand extends Command {
         return false;
     }
 
+    private void deleteCategories(Bot bot) {//todo еще принимать имя выбранной категории
+        try {
+            bot.editMessageText(new EditMessageText()
+                            .setText("Category chosen")
+                            .setMessageId(categoriesMessageId)
+                            .setChatId(chatId)
+            );
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void showCategories(Bot bot, String chooseCategory) throws TelegramApiException {
-        bot.sendMessage(new SendMessage()
+        Message message = bot.sendMessage(new SendMessage()
                 .setChatId(chatId)
                 .setText(chooseCategory)
                 .setReplyMarkup(getCategoriesKeyboard())
         );
+        categoriesMessageId = message.getMessageId();
         wt = WaitingType.CATEGORY;
     }
 
