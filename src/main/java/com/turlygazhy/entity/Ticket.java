@@ -12,6 +12,8 @@ public class Ticket {
     private String executorNumber;
     private String executorFullName;
     private int googleSheetRowId;
+    private int id;
+    private String state;
 
     public void setCategory(Category category) {
         this.category = category;
@@ -59,5 +61,21 @@ public class Ticket {
 
     public void setGoogleSheetRowId(int googleSheetRowId) {
         this.googleSheetRowId = googleSheetRowId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

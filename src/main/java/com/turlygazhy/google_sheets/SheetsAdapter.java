@@ -56,7 +56,15 @@ public class SheetsAdapter {
 
         List<Object> dataRow = new ArrayList<>();
 
-        dataRow.add("Itarata");
+        dataRow.add(ticket.getId());
+        dataRow.add(ticket.getCategory().getName());
+        dataRow.add(ticket.getText());
+        String executorFullName = ticket.getExecutorFullName();
+        if (executorFullName == null) {
+            executorFullName = "-";
+        }
+        dataRow.add(executorFullName);
+        dataRow.add(ticket.getState());
 
         writeData.add(dataRow);
 

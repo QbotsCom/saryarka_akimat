@@ -1,14 +1,10 @@
 package com.turlygazhy;
 
-import com.turlygazhy.dao.DaoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Created by Yerassyl_Turlygazhy on 11/24/2016.

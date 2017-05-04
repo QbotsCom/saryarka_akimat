@@ -5,12 +5,14 @@ import com.turlygazhy.entity.Ticket;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * Created by user on 4/30/17.
  */
 public class TicketDao {
+    public static final String NOT_FINISHED = "not_finished";
     private final Connection connection;
 
     public TicketDao(Connection connection) {
@@ -28,8 +30,14 @@ public class TicketDao {
         ps.setString(4, ticket.getExecutorNumber());
         ps.setInt(5, ticket.getGoogleSheetRowId());
         ps.setBoolean(6, false);
+        ps.execute();
 
+        ResultSet rs = ps.getGeneratedKeys();
+        rs.next();
+        int id = rs.getInt(1);
+        ticket.setId(id);
         ticket.setGoogleSheetRowId(lastRowId);
+        ticket.setState(variablesDao.select(NOT_FINISHED));
         return ticket;
     }
 }
