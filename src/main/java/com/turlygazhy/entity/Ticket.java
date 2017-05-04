@@ -11,6 +11,7 @@ public class Ticket {
     private String photo;
     private String executorNumber;
     private String executorFullName;
+    private int googleSheetRowId;
 
     public void setCategory(Category category) {
         this.category = category;
@@ -50,5 +51,13 @@ public class Ticket {
 
     public String getExecutorFullName() {
         return executorFullName;
+    }
+
+    public int getGoogleSheetRowId() {
+        return googleSheetRowId;
+    }
+
+    public void setGoogleSheetRowId(int googleSheetRowId) {
+        this.googleSheetRowId = googleSheetRowId;
     }
 }

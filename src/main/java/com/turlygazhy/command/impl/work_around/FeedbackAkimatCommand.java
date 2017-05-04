@@ -136,9 +136,9 @@ public class FeedbackAkimatCommand extends Command {
     private void deleteCategories(Bot bot) {//todo еще принимать имя выбранной категории
         try {
             bot.editMessageText(new EditMessageText()
-                            .setText("Category chosen")
-                            .setMessageId(categoriesMessageId)
-                            .setChatId(chatId)
+                    .setText("Category chosen")
+                    .setMessageId(categoriesMessageId)
+                    .setChatId(chatId)
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -193,7 +193,8 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
-        SheetsAdapter.writeTicket(ticket, 1);//todo здесь 1 нужно заменить
+        ticket = ticketDao.insert(ticket, variablesDao);
+        SheetsAdapter.writeTicket(ticket);
         bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket

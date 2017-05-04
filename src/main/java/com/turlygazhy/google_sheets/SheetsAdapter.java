@@ -67,9 +67,9 @@ public class SheetsAdapter {
                 .execute();
     }
 
-    public static void writeTicket(Ticket ticket, int rowId) {
+    public static void writeTicket(Ticket ticket) {
         try {
-            writeData(SPREAD_SHEET_ID, "list", 'A', rowId, ticket);
+            writeData(SPREAD_SHEET_ID, "list", 'A', ticket.getGoogleSheetRowId(), ticket);
         } catch (Exception e) {
             e.printStackTrace();
             //todo log

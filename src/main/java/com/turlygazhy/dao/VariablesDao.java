@@ -10,6 +10,7 @@ import java.sql.SQLException;
  */
 public class VariablesDao {
     public static final int VALUE_COLUMN_INDEX = 3;
+    public static final String LAST_ROW_ID = "last_row_id";
     private final Connection connection;
 
     public VariablesDao(Connection connection) {
@@ -23,5 +24,18 @@ public class VariablesDao {
         ResultSet resultSet = ps.getResultSet();
         resultSet.next();
         return resultSet.getString(VALUE_COLUMN_INDEX);
+    }
+
+    public synchronized int takeLastRowId() throws SQLException {
+        int lastRowId = Integer.parseInt(select(LAST_ROW_ID));
+        update(LAST_ROW_ID, String.valueOf(lastRowId + 1));
+        return lastRowId;
+    }
+
+    private void update(String key, String value) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("update VAR set value=? where key=?");
+        ps.setString(1, value);
+        ps.setString(2, key);
+        ps.execute();
     }
 }
