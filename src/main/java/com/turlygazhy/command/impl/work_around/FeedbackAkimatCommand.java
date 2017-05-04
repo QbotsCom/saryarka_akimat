@@ -7,6 +7,7 @@ import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
+import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 public class FeedbackAkimatCommand extends Command {
     private List<Category> categories;
-    private List<Category> childs;
+    private List<Category> children;
     private int shownCategoriesList = 0;
     private Ticket ticket = new Ticket();
     private Integer categoriesMessageId;
@@ -102,7 +103,7 @@ public class FeedbackAkimatCommand extends Command {
                             .setReplyMarkup(getCategoryKeyboard(category))
                     );
                     categoriesMessageId = message.getMessageId();
-                    childs = category.getChilds();
+                    children = category.getChilds();
                     return false;
                 }
                 ticket.setCategory(category);
@@ -192,6 +193,7 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
+        SheetsAdapter.writeTicket(ticket, 1);//todo здесь 1 нужно заменить
         bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
@@ -231,7 +233,7 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private Category findChild(String updateMessageText) {
-        for (Category child : childs) {
+        for (Category child : children) {
             if (child.getName().equals(updateMessageText)) {
                 return child;
             }
