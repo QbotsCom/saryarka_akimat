@@ -15,24 +15,16 @@ public class Main {
     private static final long YERASSYL_CHAT_ID = 293188753L;
     private static TelegramBotsApi telegramBotsApi;
 
-    public static void main(String[] args) {
+    //todo deadline
+    //todo увидеть свои заявки
 
+    public static void main(String[] args) {
         logger.info("ApiContextInitializer.init()");
         ApiContextInitializer.init();
 
         telegramBotsApi = new TelegramBotsApi();
-//        Bot bot = new Bot("Mother bot", "325789458:AAEGL-ERbDULJI8uGWo_grOcPbxnkzExNec", BOT_MOTHER_ID, YERASSYL_CHAT_ID);
         Bot bot = new Bot("Сарыарка акимат", "295957927:AAHtCvP5Gcc1kNCmYpgc7yor646ebinnNiQ", 109, YERASSYL_CHAT_ID);
         register(bot);
-//        try {
-//            List<Bot> bots = DaoFactory.getFactory().getBotsDao().selectAll();
-//            for (Bot bot1 : bots) {
-//                register(bot1);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     public static void register(Bot bot) {
