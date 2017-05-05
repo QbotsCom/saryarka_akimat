@@ -118,7 +118,7 @@ public class FeedbackAkimatCommand extends Command {
             case PHOTO:
                 if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(7))) {//no photo
                     sendTicket(bot);
-                    sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
+                    answerToUser(bot);
                     return false;
                 }
                 try {
@@ -127,10 +127,24 @@ public class FeedbackAkimatCommand extends Command {
                     throw new CannotHandleUpdateException();
                 }
                 sendTicket(bot);
-                sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
+                answerToUser(bot);
                 return false;
         }
         return false;
+    }
+
+    private void answerToUser(Bot bot) throws SQLException, TelegramApiException {
+        String yourTicketCreatedMessage = messageDao.getMessageText(8);
+        List<User> executors = ticket.getExecutors();
+        if (executors != null) {
+            for (User executor : executors) {
+                if (executor.isExecutor()) {
+                    yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + executor.getUserName() + " " + executor.getPhoneNumber();
+                }
+            }
+        }
+        String additionalInfoForUser = messageDao.getMessageText(184);
+        sendMessage(yourTicketCreatedMessage + "\n" + additionalInfoForUser, chatId, bot);
     }
 
     private void deleteCategories(Bot bot) {//todo еще принимать имя выбранной категории
@@ -165,8 +179,7 @@ public class FeedbackAkimatCommand extends Command {
                 executors[2] = executors[2].split(":")[0];
             }
             User user = userDao.select(Integer.parseInt(executors[2]));
-            ticket.setExecutorNumber(user.getPhoneNumber());
-            ticket.setExecutorFullName(user.getUserName());
+            ticket.addExecutor(user);
         }
         for (String executorId : executors) {
             if (executorId.contains(":")) {
