@@ -9,6 +9,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.turlygazhy.entity.Ticket;
+import com.turlygazhy.entity.User;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -59,11 +60,16 @@ public class SheetsAdapter {
         dataRow.add(ticket.getId());
         dataRow.add(ticket.getCategory().getName());
         dataRow.add(ticket.getText());
-        String executorFullName = ticket.getExecutorFullName();
-        if (executorFullName == null) {
+        List<User> executors = ticket.getExecutors();
+        String executorFullName = "";
+        if (executors == null) {
             executorFullName = "-";
+        } else {
+            for (User executor : executors) {
+                executorFullName = executorFullName + "\n" + executor.getUserName();
+            }
         }
-        dataRow.add(executorFullName);
+        dataRow.add(executorFullName.trim());
         dataRow.add(ticket.getState());
 
         writeData.add(dataRow);

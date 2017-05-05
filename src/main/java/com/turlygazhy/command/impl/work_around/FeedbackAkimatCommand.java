@@ -55,7 +55,8 @@ public class FeedbackAkimatCommand extends Command {
             return false;
         }
         if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(19))) {//back
-            deleteCategories(bot);
+            String backWasClicked = messageDao.getMessageText(185);
+            deleteCategories(bot, backWasClicked);
             showCategories(bot, chooseCategory);
             return false;
         }
@@ -81,7 +82,7 @@ public class FeedbackAkimatCommand extends Command {
                     );
                     return false;
                 }
-                Category category;
+                Category category = null;
                 try {
                     category = findCategory(updateMessageText);
                 } catch (Exception e) {
@@ -91,7 +92,7 @@ public class FeedbackAkimatCommand extends Command {
                         throw new CannotHandleUpdateException();
                     }
                 } finally {
-                    deleteCategories(bot);
+                    deleteCategories(bot, category.getName());
                 }
                 if (category.getAfterText() != null) {
                     sendMessage(category.getAfterText(), chatId, bot);
@@ -144,13 +145,13 @@ public class FeedbackAkimatCommand extends Command {
             }
         }
         String additionalInfoForUser = messageDao.getMessageText(184);
-        sendMessage(yourTicketCreatedMessage + "\n" + additionalInfoForUser, chatId, bot);
+        sendMessage(yourTicketCreatedMessage + "\n\n" + additionalInfoForUser, chatId, bot);
     }
 
-    private void deleteCategories(Bot bot) {//todo еще принимать имя выбранной категории
+    private void deleteCategories(Bot bot, String categoryName) {
         try {
             bot.editMessageText(new EditMessageText()
-                    .setText("Category chosen")
+                    .setText(categoryName)
                     .setMessageId(categoriesMessageId)
                     .setChatId(chatId)
             );
@@ -174,13 +175,13 @@ public class FeedbackAkimatCommand extends Command {
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
         String[] executors = executorsIds.split(",");
-        if (executors.length >= 3) {
-            if (executors[2].contains(":")) {
-                executors[2] = executors[2].split(":")[0];
+        for (String executor : executors) {
+            if (executor.contains(":")) {
+                executor = executor.split(":")[0];// TODO: 05-May-17 hardcode
             }
-            User user = userDao.select(Integer.parseInt(executors[2]));
-            ticket.addExecutor(user);
+            ticket.addExecutor(userDao.select(Integer.parseInt(executor)));
         }
+
         for (String executorId : executors) {
             if (executorId.contains(":")) {
                 String[] severalExecutorsIds = executorId.split(":");
