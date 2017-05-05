@@ -17,6 +17,7 @@ public class Main {
 
     //todo deadline
     //todo увидеть свои заявки
+    // TODO: 05-May-17 обратная связь исполнителя с заявителем
 
     public static void main(String[] args) {
         logger.info("ApiContextInitializer.init()");
