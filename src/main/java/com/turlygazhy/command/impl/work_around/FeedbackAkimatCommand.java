@@ -7,6 +7,7 @@ import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
+import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 public class FeedbackAkimatCommand extends Command {
     private List<Category> categories;
-    private List<Category> childs;
+    private List<Category> children;
     private int shownCategoriesList = 0;
     private Ticket ticket = new Ticket();
     private Integer categoriesMessageId;
@@ -54,7 +55,8 @@ public class FeedbackAkimatCommand extends Command {
             return false;
         }
         if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(19))) {//back
-            deleteCategories(bot);
+            String backWasClicked = messageDao.getMessageText(185);
+            deleteCategories(bot, backWasClicked);
             showCategories(bot, chooseCategory);
             return false;
         }
@@ -80,7 +82,7 @@ public class FeedbackAkimatCommand extends Command {
                     );
                     return false;
                 }
-                Category category;
+                Category category = null;
                 try {
                     category = findCategory(updateMessageText);
                 } catch (Exception e) {
@@ -90,7 +92,7 @@ public class FeedbackAkimatCommand extends Command {
                         throw new CannotHandleUpdateException();
                     }
                 } finally {
-                    deleteCategories(bot);
+                    deleteCategories(bot, category.getName());
                 }
                 if (category.getAfterText() != null) {
                     sendMessage(category.getAfterText(), chatId, bot);
@@ -102,7 +104,7 @@ public class FeedbackAkimatCommand extends Command {
                             .setReplyMarkup(getCategoryKeyboard(category))
                     );
                     categoriesMessageId = message.getMessageId();
-                    childs = category.getChilds();
+                    children = category.getChilds();
                     return false;
                 }
                 ticket.setCategory(category);
@@ -117,7 +119,7 @@ public class FeedbackAkimatCommand extends Command {
             case PHOTO:
                 if (updateMessageText != null && updateMessageText.equals(buttonDao.getButtonText(7))) {//no photo
                     sendTicket(bot);
-                    sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
+                    answerToUser(bot);
                     return false;
                 }
                 try {
@@ -126,18 +128,32 @@ public class FeedbackAkimatCommand extends Command {
                     throw new CannotHandleUpdateException();
                 }
                 sendTicket(bot);
-                sendMessage(messageDao.getMessageText(8) + ticket.getExecutorFullName() + " " + ticket.getExecutorNumber(), chatId, bot);//thank you, ticket created
+                answerToUser(bot);
                 return false;
         }
         return false;
     }
 
-    private void deleteCategories(Bot bot) {//todo еще принимать имя выбранной категории
+    private void answerToUser(Bot bot) throws SQLException, TelegramApiException {
+        String yourTicketCreatedMessage = messageDao.getMessageText(8);
+        List<User> executors = ticket.getExecutors();
+        if (executors != null) {
+            for (User executor : executors) {
+                if (executor.isExecutor()) {
+                    yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + executor.getUserName() + " " + executor.getPhoneNumber();
+                }
+            }
+        }
+        String additionalInfoForUser = messageDao.getMessageText(184);
+        sendMessage(yourTicketCreatedMessage + "\n\n" + additionalInfoForUser, chatId, bot);
+    }
+
+    private void deleteCategories(Bot bot, String categoryName) {
         try {
             bot.editMessageText(new EditMessageText()
-                            .setText("Category chosen")
-                            .setMessageId(categoriesMessageId)
-                            .setChatId(chatId)
+                    .setText(categoryName)
+                    .setMessageId(categoriesMessageId)
+                    .setChatId(chatId)
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -159,14 +175,13 @@ public class FeedbackAkimatCommand extends Command {
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
         String[] executors = executorsIds.split(",");
-        if (executors.length >= 3) {
-            if (executors[2].contains(":")) {
-                executors[2] = executors[2].split(":")[0];
+        for (String executor : executors) {
+            if (executor.contains(":")) {
+                executor = executor.split(":")[0];// TODO: 05-May-17 hardcode
             }
-            User user = userDao.select(Integer.parseInt(executors[2]));
-            ticket.setExecutorNumber(user.getPhoneNumber());
-            ticket.setExecutorFullName(user.getUserName());
+            ticket.addExecutor(userDao.select(Integer.parseInt(executor)));
         }
+
         for (String executorId : executors) {
             if (executorId.contains(":")) {
                 String[] severalExecutorsIds = executorId.split(":");
@@ -192,7 +207,8 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
-        ticketDao.insert(ticket);
+        ticket = ticketDao.insert(ticket, variablesDao);
+        SheetsAdapter.writeTicket(ticket);
         bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
@@ -232,7 +248,7 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private Category findChild(String updateMessageText) {
-        for (Category child : childs) {
+        for (Category child : children) {
             if (child.getName().equals(updateMessageText)) {
                 return child;
             }

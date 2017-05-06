@@ -20,7 +20,7 @@ public class ConnectionPool {
 
     //data for settings of connection
     private static final int CONNECTION_NUMBER = 10;
-    private static final String JDBC_URL = "jdbc:h2:~/saryarka_akimat6";
+    private static final String JDBC_URL = "jdbc:h2:~/saryarka_akimat11";
 //    private static final String JDBC_URL = "jdbc:h2:~/bot_mother17";
     private static final String DB_LOGIN = "user";
     private static final String DB_PASSWORD = "user";

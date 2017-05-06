@@ -8,6 +8,7 @@ public class User {
     private long chatId;
     private String userName;
     private String phoneNumber;
+    private boolean executor;
 
     public void setId(int id) {
         this.id = id;
@@ -39,5 +40,13 @@ public class User {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public boolean isExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(boolean executor) {
+        this.executor = executor;
     }
 }

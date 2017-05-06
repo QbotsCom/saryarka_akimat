@@ -19,6 +19,7 @@ public class UserDao {
     public static final int ID_COLUMN_INDEX = 1;
     public static final int USERNAME_COLUMN_INDEX = 3;
     public static final int PHONE_COLUMN_INDEX = 4;
+    public static final int IS_EXECUTOR_COLUMN_INDEX = 5;
     private Connection connection;
 
     public UserDao(Connection connection) {
@@ -83,6 +84,7 @@ public class UserDao {
         user.setChatId(rs.getLong(CHAT_ID_COLUMN_INDEX));
         user.setUserName(rs.getString(USERNAME_COLUMN_INDEX));
         user.setPhoneNumber(rs.getString(PHONE_COLUMN_INDEX));
+        user.setExecutor(rs.getBoolean(IS_EXECUTOR_COLUMN_INDEX));
         return user;
     }
 }
