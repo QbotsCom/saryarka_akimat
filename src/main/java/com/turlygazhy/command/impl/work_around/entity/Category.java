@@ -13,6 +13,7 @@ public class Category {
     private List<Category> childs;
     private String executorsIds;
     private String afterText;
+    private String deadline;
 
     public void setId(int id) {
         this.id = id;
@@ -66,5 +67,13 @@ public class Category {
 
     public String getAfterText() {
         return afterText;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 }

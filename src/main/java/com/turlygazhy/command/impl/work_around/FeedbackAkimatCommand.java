@@ -135,6 +135,8 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void answerToUser(Bot bot) throws SQLException, TelegramApiException {
+        String categoryDeadline = ticket.getCategory().getDeadline();
+        String deadline = messageDao.getMessageText(188) + " " + categoryDeadline;
         String yourTicketCreatedMessage = messageDao.getMessageText(8);
         List<User> executors = ticket.getExecutors();
         if (executors != null) {
@@ -145,6 +147,9 @@ public class FeedbackAkimatCommand extends Command {
             }
         }
         String additionalInfoForUser = messageDao.getMessageText(184);
+        if (categoryDeadline != null) {
+            yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + deadline;
+        }
         sendMessage(yourTicketCreatedMessage + "\n\n" + additionalInfoForUser, chatId, bot);
     }
 
@@ -208,9 +213,9 @@ public class FeedbackAkimatCommand extends Command {
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
         ticket = ticketDao.insert(ticket, variablesDao);
-        SheetsAdapter.writeTicket(ticket);
+//        SheetsAdapter.writeTicket(ticket);todo return
         bot.sendMessage(new SendMessage()
-                        .setChatId(chatId)
+                        .setChatId(this.chatId)//todo убрать this
                         .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
 //                .setReplyMarkup(getInprogKeyboard())
         );
@@ -220,16 +225,16 @@ public class FeedbackAkimatCommand extends Command {
                     .setChatId(chatId)
             );
         }
-        if (numbersWithoutChat.size() > 0) {
-            String warning = messageDao.getMessageText(10);//this person does not have bot
-            for (String number : numbersWithoutChat) {
-                warning = warning + "\n" + number;
-            }
-            bot.sendMessage(new SendMessage()
-                    .setChatId(chatId)
-                    .setText(warning)
-            );
-        }
+//        if (numbersWithoutChat.size() > 0) {
+//            String warning = messageDao.getMessageText(10);//this person does not have bot
+//            for (String number : numbersWithoutChat) {
+//                warning = warning + "\n" + number;
+//            }
+//            bot.sendMessage(new SendMessage()
+//                    .setChatId(chatId)
+//                    .setText(warning)
+//            );
+//        }todo return
     }
 
     private ReplyKeyboard getInprogKeyboard() {

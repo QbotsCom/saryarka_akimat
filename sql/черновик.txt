@@ -1,1 +1,2 @@
-script to '/home/user/IdeaProjects/saryarka_akimat/sql/saryarka_akimat15.sql'
+script to '/home/user/IdeaProjects/saryarka_akimat/sql/saryarka_akimat16.sql'
+
