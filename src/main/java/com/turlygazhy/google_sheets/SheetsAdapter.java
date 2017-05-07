@@ -8,13 +8,18 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.turlygazhy.dao.DaoFactory;
+import com.turlygazhy.dao.VariablesDao;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class SheetsAdapter {
@@ -23,6 +28,7 @@ public class SheetsAdapter {
     private static HttpTransport httpTransport;
     private static final List<String> SPREADSHEET_SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS);
     private static final String SPREAD_SHEET_ID = "15RGqEzUz0HyybVPsDOeBs5-CPT2kVNS_FkebiALj6Fg";
+    private static SimpleDateFormat format = new SimpleDateFormat("dd.MM.yy hh:mm");
 
 
     private static Sheets service;
@@ -49,7 +55,8 @@ public class SheetsAdapter {
                                  String sheetName,
                                  char colStart, int rowId,
                                  Ticket ticket) throws Exception {
-        authorize("C:\\bots-data\\members-36a5849089da.json");
+//        authorize("C:\\bots-data\\members-36a5849089da.json");todo return
+        authorize("/home/user/Downloads/members-36a5849089da.json");
 
         String writeRange = sheetName + "!" + colStart + rowId + ":" + (char) (colStart + 5);
 
@@ -71,6 +78,9 @@ public class SheetsAdapter {
         }
         dataRow.add(executorFullName.trim());
         dataRow.add(ticket.getState());
+        Date receivingTime = new Date();
+        dataRow.add(format.format(receivingTime));
+        dataRow.add(handleDeadline(receivingTime, ticket.getCategory().getDeadline()));//todo test it
 
         writeData.add(dataRow);
 
@@ -79,6 +89,21 @@ public class SheetsAdapter {
                 .update(spreadsheetId, writeRange, vr)
                 .setValueInputOption("RAW")
                 .execute();
+    }
+
+    private static Date handleDeadline(Date receivingTime, String deadline) throws SQLException {
+        Date result = new Date(receivingTime.toString());
+        VariablesDao variablesDao = DaoFactory.getFactory().getVariablesDao();
+        String dayFirstLetter = variablesDao.select("day_first_letter");
+        String hourFirstLetter = variablesDao.select("hour_first_letter");
+        String[] split = deadline.split(" ");
+        if (split[1].startsWith(dayFirstLetter)) {
+            result.setDate(result.getDate() + Integer.parseInt(split[0]));
+        }
+        if (split[1].startsWith(hourFirstLetter)) {
+            result.setHours(result.getHours() + Integer.parseInt(split[0]));
+        }
+        return result;
     }
 
     public static void writeTicket(Ticket ticket) {
