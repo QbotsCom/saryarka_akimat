@@ -213,9 +213,9 @@ public class FeedbackAkimatCommand extends Command {
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
         ticket = ticketDao.insert(ticket, variablesDao);
-//        SheetsAdapter.writeTicket(ticket);todo return
+        SheetsAdapter.writeTicket(ticket);
         bot.sendMessage(new SendMessage()
-                        .setChatId(this.chatId)//todo убрать this
+                        .setChatId(chatId)
                         .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
 //                .setReplyMarkup(getInprogKeyboard())
         );
@@ -225,16 +225,16 @@ public class FeedbackAkimatCommand extends Command {
                     .setChatId(chatId)
             );
         }
-//        if (numbersWithoutChat.size() > 0) {
-//            String warning = messageDao.getMessageText(10);//this person does not have bot
-//            for (String number : numbersWithoutChat) {
-//                warning = warning + "\n" + number;
-//            }
-//            bot.sendMessage(new SendMessage()
-//                    .setChatId(chatId)
-//                    .setText(warning)
-//            );
-//        }todo return
+        if (numbersWithoutChat.size() > 0) {
+            String warning = messageDao.getMessageText(10);//this person does not have bot
+            for (String number : numbersWithoutChat) {
+                warning = warning + "\n" + number;
+            }
+            bot.sendMessage(new SendMessage()
+                    .setChatId(chatId)
+                    .setText(warning)
+            );
+        }
     }
 
     private ReplyKeyboard getInprogKeyboard() {

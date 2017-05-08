@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -37,6 +39,12 @@ public class CategoriesDao {
                 result.add(select(rs.getInt(ID_COLUMN_INDEX)));
             }
         }
+        Collections.sort(result, new Comparator<Category>() {
+            @Override
+            public int compare(Category o1, Category o2) {
+                return o1.getId() - o2.getId();
+            }
+        });
         return result;
     }
 

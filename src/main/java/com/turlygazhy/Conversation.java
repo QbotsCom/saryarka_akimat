@@ -52,6 +52,7 @@ public class Conversation {
                 Integer fromId = update.getMessage().getFrom().getId();
                 if (contactUserID != null && contactUserID.equals(fromId)) {
                     String phoneNumber = contact.getPhoneNumber();
+                    phoneNumber = phoneNumber.replace("+", "");
                     boolean exist = userDao.checkPhoneNumber(phoneNumber);
                     if (exist) {
                         User user = userDao.setChatId(phoneNumber, updateMessage.getChatId());
@@ -66,10 +67,14 @@ public class Conversation {
                                 }
                             }
                         }
-                        bot.sendMessage(new SendMessage()
-                                .setChatId(updateMessage.getChatId())
-                                .setText(messageText)
-                        );
+                        try {
+                            bot.sendMessage(new SendMessage()
+                                    .setChatId(updateMessage.getChatId())
+                                    .setText(messageText)
+                                    .setReplyMarkup(keyboardMarkUpDao.findMain(109))
+                            );
+                        } catch (NoMainKeyboardException ignored) {
+                        }
                         return;
                     }
                 }

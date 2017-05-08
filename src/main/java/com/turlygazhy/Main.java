@@ -24,8 +24,8 @@ public class Main {
         ApiContextInitializer.init();
 
         telegramBotsApi = new TelegramBotsApi();
-//        Bot bot = new Bot("Сарыарка акимат", "295957927:AAHtCvP5Gcc1kNCmYpgc7yor646ebinnNiQ", 109, YERASSYL_CHAT_ID);
-        Bot bot = new Bot("Сарыарка акимат", "302643839:AAHOsiedpf8bsyCzXETeU0C-ijZGu8v4sN0", 109, YERASSYL_CHAT_ID);//todo test
+        Bot bot = new Bot("Сарыарка акимат", "295957927:AAHtCvP5Gcc1kNCmYpgc7yor646ebinnNiQ", 109, YERASSYL_CHAT_ID);
+//        Bot bot = new Bot("Сарыарка акимат", "302643839:AAHOsiedpf8bsyCzXETeU0C-ijZGu8v4sN0", 109, YERASSYL_CHAT_ID);//todo test
         register(bot);
     }
 
