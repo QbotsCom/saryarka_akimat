@@ -140,8 +140,17 @@ public class FeedbackAkimatCommand extends Command {
         String yourTicketCreatedMessage = messageDao.getMessageText(8);
         List<User> executors = ticket.getExecutors();
         if (executors != null) {
+            boolean atLeastOne = false;
             for (User executor : executors) {
                 if (executor.isExecutor()) {
+                    if (!atLeastOne) {
+                        atLeastOne = true;
+                    }
+                    yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + executor.getUserName() + " " + executor.getPhoneNumber();
+                }
+            }
+            if (!atLeastOne) {
+                for (User executor : executors) {
                     yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + executor.getUserName() + " " + executor.getPhoneNumber();
                 }
             }
