@@ -80,7 +80,11 @@ public class SheetsAdapter {
         dataRow.add(ticket.getState());
         Date receivingTime = new Date();
         dataRow.add(format.format(receivingTime));
-        dataRow.add(handleDeadline(receivingTime, ticket.getCategory().getDeadline()));
+        try {
+            dataRow.add(handleDeadline(receivingTime, ticket.getCategory().getDeadline()));
+        } catch (Exception e) {
+            dataRow.add("-");
+        }
 
         writeData.add(dataRow);
 
