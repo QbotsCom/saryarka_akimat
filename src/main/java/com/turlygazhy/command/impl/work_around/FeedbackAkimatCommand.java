@@ -157,7 +157,7 @@ public class FeedbackAkimatCommand extends Command {
         }
         String additionalInfoForUser = messageDao.getMessageText(184);
         if (categoryDeadline != null) {
-            yourTicketCreatedMessage = yourTicketCreatedMessage + "\n" + deadline;
+            yourTicketCreatedMessage = yourTicketCreatedMessage + "\n\n" + deadline;
         }
         sendMessage(yourTicketCreatedMessage + "\n\n" + additionalInfoForUser, chatId, bot);
     }
