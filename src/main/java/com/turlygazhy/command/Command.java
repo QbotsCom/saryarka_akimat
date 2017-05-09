@@ -1,10 +1,7 @@
 package com.turlygazhy.command;
 
 import com.turlygazhy.Bot;
-import com.turlygazhy.dao.CategoriesDao;
-import com.turlygazhy.dao.DaoFactory;
-import com.turlygazhy.dao.GoalDao;
-import com.turlygazhy.dao.VariablesDao;
+import com.turlygazhy.dao.*;
 import com.turlygazhy.dao.impl.*;
 import com.turlygazhy.entity.Message;
 import com.turlygazhy.entity.WaitingType;
@@ -49,7 +46,7 @@ public abstract class Command {
     protected VariablesDao variablesDao = factory.getVariablesDao();
     protected CategoriesDao categoriesDao = factory.getCategoriesDao();
     protected TicketDao ticketDao = factory.getTicketDao();
-
+    protected ScriptExecutor scriptExecutor = factory.getScriptExecutor();
 
     public long getId() {
         return id;

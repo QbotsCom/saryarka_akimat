@@ -108,4 +108,8 @@ public class DaoFactory {
     public TicketDao getTicketDao() {
         return new TicketDao(connection);
     }
+
+    public ScriptExecutor getScriptExecutor() {
+        return new ScriptExecutor(connection);
+    }
 }
