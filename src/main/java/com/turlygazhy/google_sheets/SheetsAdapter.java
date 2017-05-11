@@ -55,8 +55,8 @@ public class SheetsAdapter {
                                  String sheetName,
                                  char colStart, int rowId,
                                  Ticket ticket) throws Exception {
-//        authorize("C:\\bots-data\\members-36a5849089da.json");
-        authorize("/home/user/Downloads/members-36a5849089da.json");
+        authorize("C:\\bots-data\\members-36a5849089da.json");
+//        authorize("/home/user/Downloads/members-36a5849089da.json");
 
         String writeRange = sheetName + "!" + colStart + rowId + ":" + (char) (colStart + 7);
 

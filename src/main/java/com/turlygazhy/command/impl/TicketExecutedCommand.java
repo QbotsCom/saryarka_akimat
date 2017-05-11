@@ -91,6 +91,7 @@ public class TicketExecutedCommand extends Command {
                     answerPhoto = photos.get(photos.size() - 1).getFileId();
                 }
                 askConfirmAnswer(bot);
+                wt = WaitingType.CONFIRM;
                 return false;
             case CONFIRM:
                 String sendText = buttonDao.getButtonText(194);
@@ -102,6 +103,7 @@ public class TicketExecutedCommand extends Command {
                 }
                 if (updateMessageText.equals(cancelText)) {
                     sendMessage(197, chatId, bot);
+                    return true;
                 }
         }
         return false;
@@ -123,7 +125,6 @@ public class TicketExecutedCommand extends Command {
                     .setChatId(creatorChatId)
             );
         }
-        wt = WaitingType.CONFIRM;
     }
 
     private void askConfirmAnswer(Bot bot) throws SQLException, TelegramApiException {
