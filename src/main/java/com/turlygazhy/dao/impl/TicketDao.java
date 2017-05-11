@@ -26,11 +26,11 @@ public class TicketDao {
         this.connection = connection;
     }
 
-    public Ticket insert(Ticket ticket, VariablesDao variablesDao, long chatId) throws SQLException {// TODO: 11-May-17 implement chatId
+    public Ticket insert(Ticket ticket, VariablesDao variablesDao, long chatId) throws SQLException {
         int lastRowId = variablesDao.takeLastRowId();
 
         /*ID  	CATEGORY  	TEXT  	PHOTO  	EXECUTOR_IDS  	GOOGLE_SHEET_ROW_ID  	EXECUTED*/
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO TICKET VALUES(default, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TICKET VALUES(default, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, ticket.getCategory().getName());
         ps.setString(2, ticket.getText());
         ps.setString(3, ticket.getPhoto());
@@ -38,7 +38,7 @@ public class TicketDao {
         if (executors != null) {
             String executorsIds = "";
             for (User user : executors) {
-                executorsIds = executorsIds + "," + user.getId();// TODO: 11-May-17 test it
+                executorsIds = executorsIds + "," + user.getId();
             }
             ps.setString(4, executorsIds.trim());
         } else {
@@ -46,6 +46,7 @@ public class TicketDao {
         }
         ps.setInt(5, ticket.getGoogleSheetRowId());
         ps.setBoolean(6, false);
+        ps.setLong(7, chatId);
         ps.execute();
 
         ResultSet rs = ps.getGeneratedKeys();
