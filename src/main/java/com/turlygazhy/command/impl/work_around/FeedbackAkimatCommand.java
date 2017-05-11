@@ -185,6 +185,11 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot) throws TelegramApiException, SQLException {
+        ticket = ticketDao.insert(ticket, variablesDao, chatId);
+//        try {
+//            SheetsAdapter.writeTicket(ticket);// TODO: 11-May-17 не работает(((
+//        } catch (Exception e) {
+//        }
         List<Long> chats = new ArrayList<>();
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
@@ -221,11 +226,6 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
-        ticket = ticketDao.insert(ticket, variablesDao, chatId);// TODO: 11-May-17 здесь передается чат выполнителя
-//        try {
-//            SheetsAdapter.writeTicket(ticket);// TODO: 11-May-17 не работает(((
-//        } catch (Exception e) {
-//        }
         try {
             if (ticket.getPhoto() != null) {
                 bot.sendPhoto(new SendPhoto()

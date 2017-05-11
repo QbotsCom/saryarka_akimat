@@ -87,13 +87,9 @@ public class TicketExecutedCommand extends Command {
                 wt = WaitingType.PHOTO;
                 return false;
             case PHOTO:
-                if (updateMessageText != null && !updateMessageText.equals(skipText)) {
-                    try {
-                        List<PhotoSize> photos = updateMessage.getPhoto();
-                        answerPhoto = photos.get(photos.size() - 1).getFileId();
-                    } catch (Exception e) {
-                        throw new CannotHandleUpdateException();
-                    }
+                List<PhotoSize> photos = updateMessage.getPhoto();
+                if (photos != null) {
+                    answerPhoto = photos.get(photos.size() - 1).getFileId();
                 }
                 askConfirmAnswer(bot);
                 answerToUser(bot);

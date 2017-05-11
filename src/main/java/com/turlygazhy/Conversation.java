@@ -130,7 +130,11 @@ public class Conversation {
     private void showMain(Update update, Bot bot) throws SQLException, TelegramApiException {
         Message message = messageDao.getMessage(7);
         SendMessage sendMessage = message.getSendMessage();
-        Long chatId = update.getMessage().getChatId();
+        org.telegram.telegrambots.api.objects.Message updateMessage = update.getMessage();
+        if (updateMessage == null) {
+            updateMessage = update.getCallbackQuery().getMessage();
+        }
+        Long chatId = updateMessage.getChatId();
         sendMessage.setChatId(chatId);
         ReplyKeyboard keyboard;
         int botId = bot.getId();
