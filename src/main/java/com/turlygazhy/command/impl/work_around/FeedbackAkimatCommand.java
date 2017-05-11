@@ -224,9 +224,9 @@ public class FeedbackAkimatCommand extends Command {
         ticket = ticketDao.insert(ticket, variablesDao, chatId);
         SheetsAdapter.writeTicket(ticket);
         bot.sendMessage(new SendMessage()
-                        .setChatId(chatId)
-                        .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
-//                .setReplyMarkup(getInprogKeyboard())
+                .setChatId(chatId)
+                .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
+                .setReplyMarkup(getCompletedKeyboard(ticket.getId()))
         );
         if (ticket.getPhoto() != null) {
             bot.sendPhoto(new SendPhoto()
@@ -246,14 +246,15 @@ public class FeedbackAkimatCommand extends Command {
         }
     }
 
-    private ReplyKeyboard getInprogKeyboard() {
+    private ReplyKeyboard getCompletedKeyboard(int id) throws SQLException {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText("Начать работу");
-        button.setCallbackData("Начать работу");
+        String completeText = messageDao.getMessageText(190);
+        button.setText(completeText);
+        button.setCallbackData(completeText + ":" + id);
         row.add(button);
         rows.add(row);
 
