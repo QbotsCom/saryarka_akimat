@@ -87,7 +87,7 @@ public class TicketExecutedCommand extends Command {
                 wt = WaitingType.PHOTO;
                 return false;
             case PHOTO:
-                if (!updateMessageText.equals(skipText)) {
+                if (updateMessageText != null && !updateMessageText.equals(skipText)) {
                     try {
                         List<PhotoSize> photos = updateMessage.getPhoto();
                         answerPhoto = photos.get(photos.size() - 1).getFileId();
@@ -105,9 +105,9 @@ public class TicketExecutedCommand extends Command {
     private void answerToUser(Bot bot) throws TelegramApiException, SQLException {
         String yourTicketHasAnswer = messageDao.getMessageText(195);
         long creatorChatId = ticket.getCreatorChatId();
-        sendMessage(yourTicketHasAnswer + ":\n" + creatorChatId, chatId, bot);
+        sendMessage(yourTicketHasAnswer + ":\n" + messageDao.getMessageText(194), creatorChatId, bot);
         if (answerText == null && answerPhoto == null) {
-            sendMessage(194, chatId, bot);
+            sendMessage(194, creatorChatId, bot);
         }
         if (answerText != null) {
             sendMessage(answerText, creatorChatId, bot);

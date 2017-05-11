@@ -216,33 +216,39 @@ public class FeedbackAkimatCommand extends Command {
             return;
         }
         for (Long chat : chats) {
-            sendTicket(bot, chat, numbersWithoutChat);
+            sendTicket(bot, chat, numbersWithoutChat);// TODO: 11-May-17 видимо это записывается несколько раз
         }
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
-        ticket = ticketDao.insert(ticket, variablesDao, chatId);
-        SheetsAdapter.writeTicket(ticket);
-        bot.sendMessage(new SendMessage()
-                .setChatId(chatId)
-                .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
-                .setReplyMarkup(getCompletedKeyboard(ticket.getId()))
-        );
-        if (ticket.getPhoto() != null) {
-            bot.sendPhoto(new SendPhoto()
-                    .setPhoto(ticket.getPhoto())
-                    .setChatId(chatId)
-            );
-        }
-        if (numbersWithoutChat.size() > 0) {
-            String warning = messageDao.getMessageText(10);//this person does not have bot
-            for (String number : numbersWithoutChat) {
-                warning = warning + "\n" + number;
+        ticket = ticketDao.insert(ticket, variablesDao, chatId);// TODO: 11-May-17 здесь передается чат выполнителя
+//        try {
+//            SheetsAdapter.writeTicket(ticket);// TODO: 11-May-17 не работает(((
+//        } catch (Exception e) {
+//        }
+        try {
+            if (ticket.getPhoto() != null) {
+                bot.sendPhoto(new SendPhoto()
+                        .setPhoto(ticket.getPhoto())
+                        .setChatId(chatId)
+                );
             }
             bot.sendMessage(new SendMessage()
                     .setChatId(chatId)
-                    .setText(warning)
+                    .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
+                    .setReplyMarkup(getCompletedKeyboard(ticket.getId()))
             );
+            if (numbersWithoutChat.size() > 0) {
+                String warning = messageDao.getMessageText(10);//this person does not have bot
+                for (String number : numbersWithoutChat) {
+                    warning = warning + "\n" + number;
+                }
+                bot.sendMessage(new SendMessage()
+                        .setChatId(chatId)
+                        .setText(warning)
+                );
+            }
+        } catch (Exception e) {
         }
     }
 
