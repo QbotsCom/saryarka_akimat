@@ -1,1 +1,3 @@
 script to '/home/user/IdeaProjects/saryarka_akimat/sql/saryarka_akimat23.sql'
+
+

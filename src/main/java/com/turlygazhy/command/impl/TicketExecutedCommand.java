@@ -2,7 +2,6 @@ package com.turlygazhy.command.impl;
 
 import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
-import com.turlygazhy.entity.Button;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
@@ -92,8 +91,18 @@ public class TicketExecutedCommand extends Command {
                     answerPhoto = photos.get(photos.size() - 1).getFileId();
                 }
                 askConfirmAnswer(bot);
-                answerToUser(bot);
-                return true;
+                return false;
+            case CONFIRM:
+                String sendText = buttonDao.getButtonText(194);
+                String cancelText = buttonDao.getButtonText(195);
+                if (updateMessageText.equals(sendText)) {
+                    answerToUser(bot);
+                    sendMessage(196, chatId, bot);
+                    return true;
+                }
+                if (updateMessageText.equals(cancelText)) {
+                    sendMessage(197, chatId, bot);
+                }
         }
         return false;
     }
@@ -114,6 +123,7 @@ public class TicketExecutedCommand extends Command {
                     .setChatId(creatorChatId)
             );
         }
+        wt = WaitingType.CONFIRM;
     }
 
     private void askConfirmAnswer(Bot bot) throws SQLException, TelegramApiException {

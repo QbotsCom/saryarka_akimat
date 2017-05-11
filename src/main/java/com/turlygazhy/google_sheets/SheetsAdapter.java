@@ -55,10 +55,10 @@ public class SheetsAdapter {
                                  String sheetName,
                                  char colStart, int rowId,
                                  Ticket ticket) throws Exception {
-        authorize("C:\\bots-data\\members-36a5849089da.json");
-//        authorize("/home/user/Downloads/members-36a5849089da.json");
+//        authorize("C:\\bots-data\\members-36a5849089da.json");
+        authorize("/home/user/Downloads/members-36a5849089da.json");
 
-        String writeRange = sheetName + "!" + colStart + rowId + ":" + (char) (colStart + 5);
+        String writeRange = sheetName + "!" + colStart + rowId + ":" + (char) (colStart + 7);
 
         List<List<Object>> writeData = new ArrayList<>();
 
@@ -82,7 +82,7 @@ public class SheetsAdapter {
         dataRow.add(format.format(receivingTime));
         try {
             Date date = handleDeadline(receivingTime, ticket.getCategory().getDeadline());
-            dataRow.add(date);
+            dataRow.add(format.format(date));
         } catch (Exception e) {
             dataRow.add("-");
         }
@@ -97,7 +97,7 @@ public class SheetsAdapter {
     }
 
     private static Date handleDeadline(Date receivingTime, String deadline) throws SQLException {
-        Date result = new Date(receivingTime.toString());
+        Date result = (Date) receivingTime.clone();
         VariablesDao variablesDao = DaoFactory.getFactory().getVariablesDao();
         String dayFirstLetter = variablesDao.select("day_first_letter");
         String hourFirstLetter = variablesDao.select("hour_first_letter");
