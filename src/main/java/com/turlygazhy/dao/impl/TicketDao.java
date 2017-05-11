@@ -1,5 +1,6 @@
 package com.turlygazhy.dao.impl;
 
+import com.turlygazhy.command.impl.work_around.entity.Category;
 import com.turlygazhy.dao.VariablesDao;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
@@ -15,13 +16,17 @@ import java.util.List;
  */
 public class TicketDao {
     public static final String NOT_FINISHED = "not_finished";
+    public static final int CATEGORY_NAME_COLUMN_INDEX = 2;
+    public static final int TEXT_COLUMN_INDEX = 3;
+    public static final int PHOTO_COLUMN_INDEX = 4;
+    public static final int CREATOR_CHAT_ID_COLUMN_INDEX = 8;
     private final Connection connection;
 
     public TicketDao(Connection connection) {
         this.connection = connection;
     }
 
-    public Ticket insert(Ticket ticket, VariablesDao variablesDao) throws SQLException {
+    public Ticket insert(Ticket ticket, VariablesDao variablesDao, long chatId) throws SQLException {// TODO: 11-May-17 implement chatId
         int lastRowId = variablesDao.takeLastRowId();
 
         /*ID  	CATEGORY  	TEXT  	PHOTO  	EXECUTOR_IDS  	GOOGLE_SHEET_ROW_ID  	EXECUTED*/
@@ -33,7 +38,7 @@ public class TicketDao {
         if (executors != null) {
             String executorsIds = "";
             for (User user : executors) {
-                executorsIds = executorsIds + "\n" + user.getId();
+                executorsIds = executorsIds + "," + user.getId();// TODO: 11-May-17 test it
             }
             ps.setString(4, executorsIds.trim());
         } else {
@@ -49,6 +54,23 @@ public class TicketDao {
         ticket.setId(id);
         ticket.setGoogleSheetRowId(lastRowId);
         ticket.setState(variablesDao.select(NOT_FINISHED));
+        return ticket;
+    }
+
+    public Ticket select(int ticketId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("select * from ticket where id=?");
+        ps.setInt(1, ticketId);
+        ps.execute();
+        ResultSet rs = ps.getResultSet();
+        rs.next();
+        Ticket ticket = new Ticket();
+        ticket.setId(ticketId);
+        Category category = new Category();
+        category.setName(rs.getString(CATEGORY_NAME_COLUMN_INDEX));
+        ticket.setCategory(category);
+        ticket.setText(rs.getString(TEXT_COLUMN_INDEX));
+        ticket.setPhoto(rs.getString(PHOTO_COLUMN_INDEX));
+        ticket.setCreatorChatId(rs.getLong(CREATOR_CHAT_ID_COLUMN_INDEX));
         return ticket;
     }
 }

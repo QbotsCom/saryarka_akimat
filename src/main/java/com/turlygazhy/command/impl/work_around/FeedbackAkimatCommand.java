@@ -221,7 +221,7 @@ public class FeedbackAkimatCommand extends Command {
     }
 
     private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
-        ticket = ticketDao.insert(ticket, variablesDao);
+        ticket = ticketDao.insert(ticket, variablesDao, chatId);
         SheetsAdapter.writeTicket(ticket);
         bot.sendMessage(new SendMessage()
                         .setChatId(chatId)

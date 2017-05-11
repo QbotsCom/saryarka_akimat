@@ -16,6 +16,7 @@ public class Ticket {
     private int id;
     private String state;
     private List<User> executors;
+    private long creatorChatId;
 
     public void setCategory(Category category) {
         this.category = category;
@@ -74,5 +75,13 @@ public class Ticket {
 
     public List<User> getExecutors() {
         return executors;
+    }
+
+    public void setCreatorChatId(long creatorChatId) {
+        this.creatorChatId = creatorChatId;
+    }
+
+    public long getCreatorChatId() {
+        return creatorChatId;
     }
 }
