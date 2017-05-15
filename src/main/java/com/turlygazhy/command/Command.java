@@ -97,6 +97,7 @@ public abstract class Command {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
+        sendMessage.setParseMode("HTML");
         bot.sendMessage(sendMessage);
         if (contact != null) {
             bot.sendContact(new SendContact()

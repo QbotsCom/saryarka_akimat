@@ -20,6 +20,7 @@ public class UserDao {
     public static final int USERNAME_COLUMN_INDEX = 3;
     public static final int PHONE_COLUMN_INDEX = 4;
     public static final int IS_EXECUTOR_COLUMN_INDEX = 5;
+    public static final int IS_AKIMAT_WORKER_COLUMN_INDEX = 6;
     private Connection connection;
 
     public UserDao(Connection connection) {
@@ -85,6 +86,7 @@ public class UserDao {
         user.setUserName(rs.getString(USERNAME_COLUMN_INDEX));
         user.setPhoneNumber(rs.getString(PHONE_COLUMN_INDEX));
         user.setExecutor(rs.getBoolean(IS_EXECUTOR_COLUMN_INDEX));
+        user.setAkimatWorker(rs.getBoolean(IS_AKIMAT_WORKER_COLUMN_INDEX));
         return user;
     }
 }

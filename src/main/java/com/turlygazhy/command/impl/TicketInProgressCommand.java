@@ -54,6 +54,7 @@ public class TicketInProgressCommand extends Command {
         switch (wt) {
             case TEXT:
                 informAboutInProgress(updateMessageText, bot, chatId);
+                sendMessage(202, chatId, bot);//your answer was send
                 return true;
         }
         return false;
@@ -63,7 +64,7 @@ public class TicketInProgressCommand extends Command {
     private void informAboutInProgress(String comment, Bot bot, Long executorChatId) throws SQLException, TelegramApiException {
         long creatorChatId = ticket.getCreatorChatId();
         String yourTicketInProgressText = messageDao.getMessageText(200);
-        sendMessage(yourTicketInProgressText + ": " + ticket.getText() + "\n" + comment, creatorChatId, bot);
+        sendMessage("<b>"+yourTicketInProgressText + ":</b> <i>" + ticket.getText() + "</i>\n" + comment, creatorChatId, bot);
         String executorsIds = ticket.getCategory().getExecutorsIds();
         String answeredToTicketText = messageDao.getMessageText(201);
         List<User> anotherExecutors = new ArrayList<>();
@@ -79,9 +80,12 @@ public class TicketInProgressCommand extends Command {
                 answeredExecutor = user;
             }
         }
-        String informText = answeredExecutor.getUserName() + " " + answeredToTicketText + " " + ticket.getText() + ": " + comment;
+        String informText ="<b>"+ answeredExecutor.getUserName() + " " + answeredToTicketText + "</b> <i>" + ticket.getText() + ":</i> " + comment;
         for (User anotherExecutor : anotherExecutors) {
-            sendMessage(informText, anotherExecutor.getChatId(), bot);
+            try {
+                sendMessage(informText, anotherExecutor.getChatId(), bot);
+            } catch (Exception ignored) {
+            }
         }
     }
 }

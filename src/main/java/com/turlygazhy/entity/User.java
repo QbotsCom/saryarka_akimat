@@ -9,6 +9,7 @@ public class User {
     private String userName;
     private String phoneNumber;
     private boolean executor;
+    private boolean akimatWorker;
 
     public void setId(int id) {
         this.id = id;
@@ -48,5 +49,13 @@ public class User {
 
     public void setExecutor(boolean executor) {
         this.executor = executor;
+    }
+
+    public boolean isAkimatWorker() {
+        return akimatWorker;
+    }
+
+    public void setAkimatWorker(boolean akimatWorker) {
+        this.akimatWorker = akimatWorker;
     }
 }

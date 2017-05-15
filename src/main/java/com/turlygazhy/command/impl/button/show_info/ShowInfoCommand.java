@@ -34,7 +34,11 @@ public class ShowInfoCommand extends Command {
         }
         try {
             if (sendPhoto != null) {
-                bot.sendPhoto(sendPhoto.setChatId(chatId));
+                try {
+                    bot.sendPhoto(sendPhoto.setChatId(chatId));
+                } catch (Exception e) {
+                    sendMessage("<i>cannot send photo</i>", chatId, bot);
+                }
             }
             bot.sendMessage(sendMessage
                     .setChatId(chatId)

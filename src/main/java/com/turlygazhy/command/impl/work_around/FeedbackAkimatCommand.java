@@ -187,7 +187,7 @@ public class FeedbackAkimatCommand extends Command {
     private void sendTicket(Bot bot) throws TelegramApiException, SQLException {
         ticket = ticketDao.insert(ticket, variablesDao, chatId);
         SheetsAdapter.writeTicket(ticket);
-        List<Long> chats = new ArrayList<>();
+        List<User> chats = new ArrayList<>();
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
         String[] executors = executorsIds.split(",");
@@ -210,19 +210,22 @@ public class FeedbackAkimatCommand extends Command {
                 numbersWithoutChat.add(user.getPhoneNumber());
                 continue;
             }
-            chats.add(chatId);
+            chats.add(user);
         }
         if (chats.size() == 0) {
             long chatId = 271036459L;
-            sendTicket(bot, chatId, numbersWithoutChat);
+            User user = new User();
+            user.setChatId(chatId);
+            sendTicket(bot, user, numbersWithoutChat);
             return;
         }
-        for (Long chat : chats) {
+        for (User chat : chats) {
             sendTicket(bot, chat, numbersWithoutChat);
         }
     }
 
-    private void sendTicket(Bot bot, long chatId, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
+    private void sendTicket(Bot bot, User user, List<String> numbersWithoutChat) throws TelegramApiException, SQLException {
+        long chatId = user.getChatId();
         try {
             if (ticket.getPhoto() != null) {
                 bot.sendPhoto(new SendPhoto()
@@ -230,11 +233,13 @@ public class FeedbackAkimatCommand extends Command {
                         .setChatId(chatId)
                 );
             }
-            bot.sendMessage(new SendMessage()
+            SendMessage sendMessage = new SendMessage()
                     .setChatId(chatId)
-                    .setText(messageDao.getMessageText(9) + "\n" + ticket.getText())//new ticket
-                    .setReplyMarkup(getCompletedKeyboard(ticket.getId()))
-            );
+                    .setText(messageDao.getMessageText(9) + "\n" + ticket.getText());
+            if (user.isAkimatWorker()) {
+                sendMessage.setReplyMarkup(getCompletedKeyboard(ticket.getId()));
+            }
+            bot.sendMessage(sendMessage);
             if (numbersWithoutChat.size() > 0) {
                 String warning = messageDao.getMessageText(10);//this person does not have bot
                 for (String number : numbersWithoutChat) {
