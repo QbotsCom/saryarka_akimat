@@ -1,6 +1,7 @@
 package com.turlygazhy.dao.impl;
 
 import com.turlygazhy.command.impl.work_around.entity.Category;
+import com.turlygazhy.dao.AbstractDao;
 import com.turlygazhy.dao.VariablesDao;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.User;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Created by user on 4/30/17.
  */
-public class TicketDao {
+public class TicketDao extends AbstractDao {
     public static final String NOT_FINISHED = "not_finished";
     public static final int CATEGORY_NAME_COLUMN_INDEX = 2;
     public static final int TEXT_COLUMN_INDEX = 3;
@@ -66,9 +67,7 @@ public class TicketDao {
         rs.next();
         Ticket ticket = new Ticket();
         ticket.setId(ticketId);
-        Category category = new Category();
-        category.setName(rs.getString(CATEGORY_NAME_COLUMN_INDEX));
-        ticket.setCategory(category);
+        ticket.setCategory(factory.getCategoriesDao().select(rs.getString(CATEGORY_NAME_COLUMN_INDEX)));
         ticket.setText(rs.getString(TEXT_COLUMN_INDEX));
         ticket.setPhoto(rs.getString(PHOTO_COLUMN_INDEX));
         ticket.setCreatorChatId(rs.getLong(CREATOR_CHAT_ID_COLUMN_INDEX));

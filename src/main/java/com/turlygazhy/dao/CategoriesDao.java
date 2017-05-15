@@ -48,7 +48,7 @@ public class CategoriesDao {
         return result;
     }
 
-    private Category select(int id) throws SQLException {
+    public Category select(int id) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CATEGORIES where id=?");
         ps.setInt(1, id);
         ps.execute();
@@ -71,5 +71,14 @@ public class CategoriesDao {
             category.setChilds(childs);
         }
         return category;
+    }
+
+    public Category select(String name) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CATEGORIES where name=?");
+        ps.setString(1, name);
+        ps.execute();
+        ResultSet rs = ps.getResultSet();
+        rs.next();
+        return select(rs.getInt(ID_COLUMN_INDEX));
     }
 }

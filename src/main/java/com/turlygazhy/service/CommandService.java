@@ -3,6 +3,7 @@ package com.turlygazhy.service;
 import com.turlygazhy.command.Command;
 import com.turlygazhy.command.impl.ExecuteScriptCommand;
 import com.turlygazhy.command.impl.TicketExecutedCommand;
+import com.turlygazhy.command.impl.TicketInProgressCommand;
 import com.turlygazhy.entity.Button;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.exception.CommandNotFoundException;
@@ -21,7 +22,11 @@ public class CommandService extends BotService {
             }
             String executedText = messageDao.getMessageText(190);
             if (text.contains(executedText + ":")) {
-                return new TicketExecutedCommand(text.replace(executedText+":",""));
+                return new TicketExecutedCommand(text.replace(executedText + ":", ""));
+            }
+            String inProgressText = messageDao.getMessageText(198);
+            if (text.contains(inProgressText + ":")) {
+                return new TicketInProgressCommand(text.replace(inProgressText + ":", ""));
             }
         }
         Button button = buttonDao.getButton(text, botId);

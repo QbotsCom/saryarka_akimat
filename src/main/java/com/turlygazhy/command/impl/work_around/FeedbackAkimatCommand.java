@@ -259,6 +259,13 @@ public class FeedbackAkimatCommand extends Command {
         button.setText(completeText);
         button.setCallbackData(completeText + ":" + id);
         row.add(button);
+
+        InlineKeyboardButton inProgressButton = new InlineKeyboardButton();
+        String inProgressText = messageDao.getMessageText(198);
+        inProgressButton.setText(inProgressText);
+        inProgressButton.setCallbackData(inProgressText + ":" + id);
+        row.add(inProgressButton);
+
         rows.add(row);
 
         keyboard.setKeyboard(rows);
