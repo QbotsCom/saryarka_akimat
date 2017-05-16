@@ -5,6 +5,7 @@ import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
+import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -97,11 +98,13 @@ public class TicketExecutedCommand extends Command {
                 String sendText = buttonDao.getButtonText(194);
                 String cancelText = buttonDao.getButtonText(195);
                 if (updateMessageText.equals(sendText)) {
+                    ticketDao.complete(ticket);
+                    SheetsAdapter.completeTicket("list", 'E', ticket.getGoogleSheetRowId(), messageDao.getMessageText(203));
                     answerToUser(bot);
-                    sendMessage(196, chatId, bot);
+                    sendMessage(196, chatId, bot);//Ваш ответ передан заявителю
                     return true;
                 }
-                if (updateMessageText.equals(cancelText)) {
+                if (updateMessageText.equals(cancelText)) {//Вы отменили действие
                     sendMessage(197, chatId, bot);
                     return true;
                 }
@@ -110,11 +113,11 @@ public class TicketExecutedCommand extends Command {
     }
 
     private void answerToUser(Bot bot) throws TelegramApiException, SQLException {
-        String yourTicketHasAnswer = messageDao.getMessageText(195);
+        String yourTicketHasAnswer = messageDao.getMessageText(195);//На ваш запрос получен ответ
         long creatorChatId = ticket.getCreatorChatId();
         sendMessage(yourTicketHasAnswer + ":\n" + messageDao.getMessageText(194), creatorChatId, bot);
         if (answerText == null && answerPhoto == null) {
-            sendMessage(194, creatorChatId, bot);
+            sendMessage(194, creatorChatId, bot);//По Вашей заявке проведена работа
         }
         if (answerText != null) {
             sendMessage(answerText, creatorChatId, bot);

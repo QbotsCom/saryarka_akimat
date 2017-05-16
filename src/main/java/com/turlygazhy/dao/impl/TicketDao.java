@@ -21,6 +21,7 @@ public class TicketDao extends AbstractDao {
     public static final int TEXT_COLUMN_INDEX = 3;
     public static final int PHOTO_COLUMN_INDEX = 4;
     public static final int CREATOR_CHAT_ID_COLUMN_INDEX = 8;
+    public static final int GOOGLE_SHEET_ROW_ID_COLUMN_INDEX = 6;
     private final Connection connection;
 
     public TicketDao(Connection connection) {
@@ -29,6 +30,7 @@ public class TicketDao extends AbstractDao {
 
     public Ticket insert(Ticket ticket, VariablesDao variablesDao, long chatId) throws SQLException {
         int lastRowId = variablesDao.takeLastRowId();
+        ticket.setGoogleSheetRowId(lastRowId);
 
         /*ID  	CATEGORY  	TEXT  	PHOTO  	EXECUTOR_IDS  	GOOGLE_SHEET_ROW_ID  	EXECUTED*/
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TICKET VALUES(default, ?, ?, ?, ?, ?, ?, ?)");
@@ -54,7 +56,6 @@ public class TicketDao extends AbstractDao {
         rs.next();
         int id = rs.getInt(1);
         ticket.setId(id);
-        ticket.setGoogleSheetRowId(lastRowId);
         ticket.setState(variablesDao.select(NOT_FINISHED));
         return ticket;
     }
@@ -71,6 +72,13 @@ public class TicketDao extends AbstractDao {
         ticket.setText(rs.getString(TEXT_COLUMN_INDEX));
         ticket.setPhoto(rs.getString(PHOTO_COLUMN_INDEX));
         ticket.setCreatorChatId(rs.getLong(CREATOR_CHAT_ID_COLUMN_INDEX));
+        ticket.setGoogleSheetRowId(rs.getInt(GOOGLE_SHEET_ROW_ID_COLUMN_INDEX));
         return ticket;
+    }
+
+    public void complete(Ticket ticket) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("update TICKET set EXECUTED=true where id=?");
+        ps.setInt(1, ticket.getId());
+        ps.execute();
     }
 }

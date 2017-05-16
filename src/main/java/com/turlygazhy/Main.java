@@ -15,10 +15,6 @@ public class Main {
     private static final long YERASSYL_CHAT_ID = 293188753L;
     private static TelegramBotsApi telegramBotsApi;
 
-    //todo deadline
-    //todo увидеть свои заявки
-    // TODO: 05-May-17 обратная связь исполнителя с заявителем
-
     public static void main(String[] args) {
         logger.info("ApiContextInitializer.init()");
         ApiContextInitializer.init();

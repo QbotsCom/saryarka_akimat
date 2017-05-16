@@ -120,6 +120,30 @@ public class SheetsAdapter {
         }
     }
 
+    public static void completeTicket(String sheetName, char colStart, int rowId, String completedText) {
+        try {
+            authorize("C:\\bots-data\\members-36a5849089da.json");
+//        authorize("/home/user/Downloads/members-36a5849089da.json");
+
+            String writeRange = sheetName + "!" + colStart + rowId + ":" + (char) (colStart + 7);
+
+            List<List<Object>> writeData = new ArrayList<>();
+
+            List<Object> dataRow = new ArrayList<>();
+            dataRow.add(completedText);
+            writeData.add(dataRow);
+
+            ValueRange vr = new ValueRange().setValues(writeData).setMajorDimension("ROWS");
+            service.spreadsheets().values()
+                    .update(SPREAD_SHEET_ID, writeRange, vr)
+                    .setValueInputOption("RAW")
+                    .execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 /*
 Этот метод умеет добавлять данные в хвост, но с ним еще нужно разбираться
     private void  AddData() throws Exception {
