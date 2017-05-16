@@ -5,6 +5,7 @@ import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -39,17 +40,30 @@ public class ShowNotExecutedTicketsCommand extends Command {
             notExecutedTickets = ticketDao.selectNotExecuted();
             chatId = updateMessage.getChatId();
             shownPage++;
-            showNotExecutedTickets(bot);
+            showNotExecutedTickets(bot, true, updateMessage.getMessageId());
             wt = WaitingType.TICKET_ID;
             return false;
         }
-//        switch (wt) {
-//            case TICKET_ID:
-//        }
+        switch (wt) {
+            case TICKET_ID:
+                String prev = messageDao.getMessageText(3);
+                String next = messageDao.getMessageText(4);
+                if (updateMessageText.equals(prev)) {
+                    shownPage--;
+                    showNotExecutedTickets(bot, false, updateMessage.getMessageId());
+                    return false;
+                }
+                if (updateMessageText.equals(next)) {
+                    shownPage++;
+                    showNotExecutedTickets(bot, false, updateMessage.getMessageId());
+                    return false;
+                }
+                // TODO: 16-May-17 implement handling id
+        }
         return false;
     }
 
-    private void showNotExecutedTickets(Bot bot) throws SQLException, TelegramApiException {// TODO: 16-May-17 test it
+    private void showNotExecutedTickets(Bot bot, boolean firstShow, Integer messageId) throws SQLException, TelegramApiException {
         String notExecutedTicketsText = messageDao.getMessageText(204);
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
@@ -57,15 +71,22 @@ public class ShowNotExecutedTicketsCommand extends Command {
         List<InlineKeyboardButton> lastRow = new ArrayList<>();
         boolean last = false;
 
-        int startCount = (shownPage - 1) * 7;
+        int shownItemsCount = 7;
+        int startCount = (shownPage - 1) * shownItemsCount;
         if (startCount < 0) {
             startCount = 0;
         }
         for (int i = startCount; i < notExecutedTickets.size(); i++) {
-            if (i >= (shownPage * 4)) {
+            if (i >= (shownPage * shownItemsCount)) {
                 break;
             }
-            notExecutedTicketsText = notExecutedTicketsText + "\n/" + notExecutedTickets.get(i).getId() + " " + notExecutedTickets.get(i).getText().substring(0, 12) + "...";
+            String ticketText = notExecutedTickets.get(i).getText();
+            if (ticketText != null) {
+                if (ticketText.length() > 14) {
+                    ticketText = ticketText.substring(0, 12) + "...";
+                }
+                notExecutedTicketsText = notExecutedTicketsText + "\n/" + notExecutedTickets.get(i).getId() + " " + ticketText;
+            }
             if (i == notExecutedTickets.size() - 1) {
                 last = true;
             }
@@ -98,10 +119,19 @@ public class ShowNotExecutedTicketsCommand extends Command {
         rows.add(lastRow);
         keyboard.setKeyboard(rows);
 
-        bot.sendMessage(new SendMessage()
-                .setChatId(chatId)
-                .setText(notExecutedTicketsText)
-                .setReplyMarkup(keyboard)
-        );
+        if (firstShow) {
+            bot.sendMessage(new SendMessage()
+                    .setChatId(chatId)
+                    .setText(notExecutedTicketsText)
+                    .setReplyMarkup(keyboard)
+            );
+        } else {
+            bot.editMessageText(new EditMessageText()
+                    .setText(notExecutedTicketsText)
+                    .setChatId(chatId)
+                    .setReplyMarkup(keyboard)
+                    .setMessageId(messageId)
+            );
+        }
     }
 }
