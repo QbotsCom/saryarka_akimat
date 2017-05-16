@@ -1,6 +1,5 @@
 package com.turlygazhy.dao.impl;
 
-import com.turlygazhy.command.impl.work_around.entity.Category;
 import com.turlygazhy.dao.AbstractDao;
 import com.turlygazhy.dao.VariablesDao;
 import com.turlygazhy.entity.Ticket;
@@ -10,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,4 +81,17 @@ public class TicketDao extends AbstractDao {
         ps.setInt(1, ticket.getId());
         ps.execute();
     }
+
+    public List<Ticket> selectNotExecuted() throws SQLException {
+        List<Ticket> result = new ArrayList<>();
+        PreparedStatement ps = connection.prepareStatement("select * from ticket where EXECUTED=false");
+        ps.execute();
+        ResultSet rs = ps.getResultSet();
+        while (rs.next()) {
+            result.add(select(rs.getInt(ID_INDEX)));
+        }
+        return result;
+    }
+
+
 }

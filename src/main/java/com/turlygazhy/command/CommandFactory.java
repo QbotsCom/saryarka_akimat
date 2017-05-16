@@ -1,5 +1,6 @@
 package com.turlygazhy.command;
 
+import com.turlygazhy.command.impl.ShowNotExecutedTicketsCommand;
 import com.turlygazhy.command.impl.archive.*;
 import com.turlygazhy.command.impl.bot.AddNewBotCommand;
 import com.turlygazhy.command.impl.bot.MyBotsCommand;
@@ -15,6 +16,8 @@ public class CommandFactory {
     public static Command getCommand(long id) {
         CommandType type = CommandType.getType(id);
         switch (type) {
+            case SHOW_NOT_EXECUTED_TICKETS:
+                return new ShowNotExecutedTicketsCommand();
             case FEEDBACK_AKIMAT:
                 return new FeedbackAkimatCommand();
             case FEEDBACK:

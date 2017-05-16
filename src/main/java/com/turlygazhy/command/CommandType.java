@@ -36,7 +36,8 @@ public enum CommandType {
     MY_BOTS(27, false),
     ADD_NEW_BOT(28, false),
     FEEDBACK(29, true),
-    FEEDBACK_AKIMAT(30, false);
+    FEEDBACK_AKIMAT(30, false),
+    SHOW_NOT_EXECUTED_TICKETS(31, false);
 
     private final int id;
     private final boolean implemented;
