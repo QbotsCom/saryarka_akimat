@@ -49,24 +49,9 @@ public class ShowNotExecutedTicketsCommand extends Command {
         return false;
     }
 
-    private void showNotExecutedTickets(Bot bot) throws SQLException, TelegramApiException {
+    private void showNotExecutedTickets(Bot bot) throws SQLException, TelegramApiException {// TODO: 16-May-17 test it
         String notExecutedTicketsText = messageDao.getMessageText(204);
-        /**todo
-         * берем лист
-         * если показываем первую страницу кнопка прев не должна быть
-         * если показываем последную страницу кнопка дальше не должна быть
-         * при нажатии нехт берем следующие 7*/
-        for (Ticket ticket : notExecutedTickets) {
-            notExecutedTicketsText = notExecutedTicketsText + "\n/" + ticket.getId() + " " + ticket.getText().substring(0, 12) + "...";
-        }
-        bot.sendMessage(new SendMessage()
-                .setChatId(chatId)
-                .setText(notExecutedTicketsText)
-                .setReplyMarkup(getNextPrevKeyboard())
-        );
-    }
 
-    private ReplyKeyboard getNextPrevKeyboard() {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> lastRow = new ArrayList<>();
@@ -80,14 +65,8 @@ public class ShowNotExecutedTicketsCommand extends Command {
             if (i >= (shownPage * 4)) {
                 break;
             }
-            List<InlineKeyboardButton> row = new ArrayList<>();
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            String name = categories.get(i).getName();
-            button.setText(name);
-            button.setCallbackData(name);
-            row.add(button);
-            rows.add(row);
-            if (i == categories.size() - 1) {
+            notExecutedTicketsText = notExecutedTicketsText + "\n/" + notExecutedTickets.get(i).getId() + " " + notExecutedTickets.get(i).getText().substring(0, 12) + "...";
+            if (i == notExecutedTickets.size() - 1) {
                 last = true;
             }
         }
@@ -118,7 +97,11 @@ public class ShowNotExecutedTicketsCommand extends Command {
 
         rows.add(lastRow);
         keyboard.setKeyboard(rows);
-        return keyboard;
 
+        bot.sendMessage(new SendMessage()
+                .setChatId(chatId)
+                .setText(notExecutedTicketsText)
+                .setReplyMarkup(keyboard)
+        );
     }
 }
