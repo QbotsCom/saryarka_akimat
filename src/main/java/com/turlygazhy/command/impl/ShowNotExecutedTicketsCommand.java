@@ -4,6 +4,8 @@ import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
+import com.turlygazhy.exception.CannotHandleUpdateException;
+import org.telegram.telegrambots.api.methods.ParseMode;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -58,9 +60,59 @@ public class ShowNotExecutedTicketsCommand extends Command {
                     showNotExecutedTickets(bot, false, updateMessage.getMessageId());
                     return false;
                 }
-                // TODO: 16-May-17 implement handling id
+                Ticket ticket;
+                try {
+                    int ticketId = Integer.parseInt(updateMessageText.replace("/", ""));
+                    ticket = ticketDao.select(ticketId);
+                } catch (Exception e) {
+                    throw new CannotHandleUpdateException();
+                }
+                showTicketForChangingDeadline(bot, ticket);
+                wt = WaitingType.BACK;
+                return false;
+            case BACK:
+                String backText = messageDao.getMessageText(206);
+                if (updateMessageText.equals(backText)) {
+                    showNotExecutedTickets(bot, false, updateMessage.getMessageId());
+                    wt = WaitingType.TICKET_ID;
+                    return false;
+                }
+                throw new CannotHandleUpdateException();
         }
         return false;
+    }
+
+    private void showTicketForChangingDeadline(Bot bot, Ticket ticket) throws TelegramApiException, SQLException {
+        String ticketText = ticket.getText();
+        ticketText = "<b>" + ticket.getId() + "</b>\n" + ticketText;
+        bot.sendMessage(new SendMessage()
+                .setText(ticketText)
+                .setChatId(chatId)
+                .setParseMode(ParseMode.HTML)
+                .setReplyMarkup(getChangeDeadlineKeyboard(ticket.getId()))
+        );
+    }
+
+    private ReplyKeyboard getChangeDeadlineKeyboard(int ticketId) throws SQLException {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+
+        InlineKeyboardButton changeDeadlineButton = new InlineKeyboardButton();
+        String changeDeadlineText = messageDao.getMessageText(205);
+        changeDeadlineButton.setText(changeDeadlineText);
+        changeDeadlineButton.setCallbackData(changeDeadlineText + ":" + ticketId);
+        row.add(changeDeadlineButton);
+
+        InlineKeyboardButton backButton = new InlineKeyboardButton();
+        String backText = messageDao.getMessageText(206);
+        backButton.setText(backText);
+        backButton.setCallbackData(backText);
+        row.add(backButton);
+
+        rows.add(row);
+        keyboard.setKeyboard(rows);
+        return keyboard;
     }
 
     private void showNotExecutedTickets(Bot bot, boolean firstShow, Integer messageId) throws SQLException, TelegramApiException {
