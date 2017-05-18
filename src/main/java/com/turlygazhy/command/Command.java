@@ -9,6 +9,7 @@ import com.turlygazhy.service.BotService;
 import org.telegram.telegrambots.api.methods.send.SendContact;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Contact;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -24,7 +25,6 @@ import java.text.SimpleDateFormat;
 public abstract class Command {
     protected long id;
     protected long messageId;
-    protected Long chatId;
 
     protected DaoFactory factory = DaoFactory.getFactory();
     protected UserDao userDao = factory.getUserDao();
@@ -47,6 +47,25 @@ public abstract class Command {
     protected CategoriesDao categoriesDao = factory.getCategoriesDao();
     protected TicketDao ticketDao = factory.getTicketDao();
     protected ScriptExecutor scriptExecutor = factory.getScriptExecutor();
+
+    protected org.telegram.telegrambots.api.objects.Message updateMessage;
+    protected String updateMessageText;
+    protected Long chatId;
+
+    public void initMessage(Update update) {
+        updateMessage = update.getMessage();
+        if (updateMessage == null) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            updateMessage = callbackQuery.getMessage();
+            updateMessageText = callbackQuery.getData();
+        } else {
+            updateMessageText = updateMessage.getText();
+        }
+    }
+
+    public void initChatId() {
+        chatId = updateMessage.getChatId();
+    }
 
     public long getId() {
         return id;

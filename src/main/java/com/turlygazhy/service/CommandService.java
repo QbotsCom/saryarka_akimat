@@ -1,6 +1,7 @@
 package com.turlygazhy.service;
 
 import com.turlygazhy.command.Command;
+import com.turlygazhy.command.impl.ChangeDeadlineCommand;
 import com.turlygazhy.command.impl.ExecuteScriptCommand;
 import com.turlygazhy.command.impl.TicketExecutedCommand;
 import com.turlygazhy.command.impl.TicketInProgressCommand;
@@ -20,13 +21,20 @@ public class CommandService extends BotService {
             if (text.equals("script")) {
                 return new ExecuteScriptCommand();
             }
+
             String executedText = messageDao.getMessageText(190);
             if (text.contains(executedText + ":")) {
                 return new TicketExecutedCommand(text.replace(executedText + ":", ""));
             }
+
             String inProgressText = messageDao.getMessageText(198);
             if (text.contains(inProgressText + ":")) {
                 return new TicketInProgressCommand(text.replace(inProgressText + ":", ""));
+            }
+
+            String changeDeadlineText = messageDao.getMessageText(205);
+            if (text.contains(changeDeadlineText + ":")) {
+                return new ChangeDeadlineCommand(text.replace(changeDeadlineText + ":", ""));
             }
         }
         Button button = buttonDao.getButton(text, botId);

@@ -72,7 +72,7 @@ public class Bot extends TelegramLongPollingBot {
         Long chatId = message.getChatId();
         Conversation conversation = conversations.get(chatId);
         if (conversation == null) {
-            logger.info("init new conversation for '{}'", chatId);
+            logger.info("initMessage new conversation for '{}'", chatId);
             conversation = new Conversation();
             conversations.put(chatId, conversation);
         }
