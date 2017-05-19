@@ -186,7 +186,6 @@ public class FeedbackAkimatCommand extends Command {
 
     private void sendTicket(Bot bot) throws TelegramApiException, SQLException {
         ticket = ticketDao.insert(ticket, variablesDao, chatId);
-        SheetsAdapter.writeTicket(ticket);
         List<User> chats = new ArrayList<>();
         List<String> numbersWithoutChat = new ArrayList<>();
         String executorsIds = ticket.getCategory().getExecutorsIds();
@@ -197,6 +196,7 @@ public class FeedbackAkimatCommand extends Command {
             }
             ticket.addExecutor(userDao.select(Integer.parseInt(executor)));
         }
+        SheetsAdapter.writeTicket(ticket);
 
         for (String executorId : executors) {
             if (executorId.contains(":")) {

@@ -73,8 +73,11 @@ public class SheetsAdapter {
             executorFullName = "-";
         } else {
             for (User executor : executors) {
-                executorFullName = executorFullName + "\n" + executor.getUserName();
+                executorFullName = executorFullName + ", " + executor.getUserName();
             }
+        }
+        if (executorFullName.startsWith(",")) {
+            executorFullName = executorFullName.substring(2);
         }
         dataRow.add(executorFullName.trim());
         dataRow.add(ticket.getState());
