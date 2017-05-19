@@ -9,6 +9,7 @@ import com.turlygazhy.service.BotService;
 import org.telegram.telegrambots.api.methods.send.SendContact;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Contact;
 import org.telegram.telegrambots.api.objects.Update;
@@ -52,12 +53,18 @@ public abstract class Command {
     protected String updateMessageText;
     protected Long chatId;
 
-    public void initMessage(Update update) {
+    public void initMessage(Update update, Bot bot) throws TelegramApiException, SQLException {
         updateMessage = update.getMessage();
         if (updateMessage == null) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             updateMessage = callbackQuery.getMessage();
             updateMessageText = callbackQuery.getData();
+            String waitText = messageDao.getMessageText(208);
+            bot.editMessageText(new EditMessageText()
+                    .setText(waitText)
+                    .setChatId(chatId)
+                    .setMessageId(updateMessage.getMessageId())
+            );
         } else {
             updateMessageText = updateMessage.getText();
         }

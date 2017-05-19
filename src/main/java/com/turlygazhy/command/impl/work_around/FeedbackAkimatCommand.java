@@ -35,15 +35,7 @@ public class FeedbackAkimatCommand extends Command {
 
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
-        Message updateMessage = update.getMessage();
-        String updateMessageText;
-        if (updateMessage == null) {
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            updateMessage = callbackQuery.getMessage();
-            updateMessageText = callbackQuery.getData();
-        } else {
-            updateMessageText = updateMessage.getText();
-        }
+        initMessage(update, bot);
         String chooseCategory = messageDao.getMessageText(2);
         String prev = messageDao.getMessageText(3);
         String next = messageDao.getMessageText(4);

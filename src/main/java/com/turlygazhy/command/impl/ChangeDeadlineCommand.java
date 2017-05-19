@@ -32,7 +32,7 @@ public class ChangeDeadlineCommand extends Command {
 
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
-        initMessage(update);
+        initMessage(update, bot);
         if (wt == null) {
             initChatId();
             sendMessage(207, chatId, bot);//send new deadline
