@@ -73,7 +73,9 @@ public class SheetsAdapter {
             executorFullName = "-";
         } else {
             for (User executor : executors) {
-                executorFullName = executorFullName + ", " + executor.getUserName();
+                if (executor.getId() != 1) {
+                    executorFullName = executorFullName + ", " + executor.getUserName();
+                }
             }
         }
         if (executorFullName.startsWith(",")) {
