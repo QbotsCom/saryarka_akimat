@@ -188,7 +188,7 @@ public class FeedbackAkimatCommand extends Command {
             }
             ticket.addExecutor(userDao.select(Integer.parseInt(executor)));
         }
-        SheetsAdapter.writeTicket(ticket);
+//        SheetsAdapter.writeTicket(ticket);todo
 
         for (String executorId : executors) {
             if (executorId.contains(":")) {

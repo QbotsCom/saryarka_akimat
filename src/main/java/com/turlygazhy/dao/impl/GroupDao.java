@@ -81,8 +81,8 @@ public class GroupDao {
     }
 
     public Group select(Integer groupId) throws SQLException {
-        logger.info("select * from groups where id=" + groupId);
-        PreparedStatement ps = connection.prepareStatement("select * from groups where id=?");
+        logger.info("select * from group0 where id=" + groupId);
+        PreparedStatement ps = connection.prepareStatement("select * from group0 where id=?");
         ps.setInt(1, groupId);
         ps.execute();
         ResultSet rs = ps.getResultSet();

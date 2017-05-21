@@ -14,6 +14,7 @@ public class Category {
     private String executorsIds;
     private String afterText;
     private String deadline;
+    private int groupId;
 
     public void setId(int id) {
         this.id = id;
@@ -75,5 +76,14 @@ public class Category {
 
     public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 }

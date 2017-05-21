@@ -99,7 +99,8 @@ public class TicketExecutedCommand extends Command {
                 String cancelText = buttonDao.getButtonText(195);
                 if (updateMessageText.equals(sendText)) {
                     ticketDao.complete(ticket);
-                    SheetsAdapter.completeTicket("list", 'E', ticket.getGoogleSheetRowId(), messageDao.getMessageText(203));
+//                    SheetsAdapter.completeTicket("list", 'E', ticket.getGoogleSheetRowId(), messageDao.getMessageText(203));
+                    //todo
                     answerToUser(bot);
                     sendMessage(196, chatId, bot);//Ваш ответ передан заявителю
                     return true;
@@ -128,6 +129,33 @@ public class TicketExecutedCommand extends Command {
                     .setChatId(creatorChatId)
             );
         }
+//        int groupId = ticket.getCategory().getGroupId();
+        int groupId = 1;
+        if (groupId != 0) {//todo i here
+//            long groupChatId = groupDao.select(groupId).getChatId();
+            long groupChatId = -234317438;
+            sendMessage("<b>Заявка " + ticket.getId() + " отработана</b>. Текст заявки: <i>" + ticket.getText()+"</i>", groupChatId, bot);
+            String photo = ticket.getPhoto();
+            if (photo!=null){
+                bot.sendPhoto(new SendPhoto()
+                        .setChatId(groupChatId)
+                        .setPhoto(photo)
+                );
+            }
+//            if (answerText == null && answerPhoto == null) {
+//                sendMessage(194, groupChatId, bot);//По Вашей заявке проведена работа
+//            }
+            if (answerText != null) {
+                sendMessage("текст ответа: <i>"+answerText+"</i>", groupChatId, bot);
+            }
+            if (answerPhoto != null) {
+                bot.sendPhoto(new SendPhoto()
+                        .setPhoto(answerPhoto)
+                        .setChatId(groupChatId)
+                );
+            }
+        }
+
     }
 
     private void askConfirmAnswer(Bot bot) throws SQLException, TelegramApiException {
