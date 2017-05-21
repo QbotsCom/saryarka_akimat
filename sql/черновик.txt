@@ -1,11 +1,1 @@
 script to '/home/user/IdeaProjects/saryarka_akimat/sql/saryarka_akimat23.sql'
-
-испортить:
-
-update USER set chat_id= 379345290, phonenumber='77075705750' where id=1
-update CATEGORIES set EXECUTOR_PHONE_NUMBER='1' where id=2
-
-востановление:
-
-update USER set chat_id= 379345290, phonenumber='77016028001' where id=1
-update CATEGORIES set EXECUTOR_PHONE_NUMBER='1,2,3,4' where id=2

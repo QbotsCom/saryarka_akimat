@@ -34,6 +34,7 @@ public class Conversation {
     private KeyboardMarkUpDao keyboardMarkUpDao = factory.getKeyboardMarkUpDao();
     private UserDao userDao = factory.getUserDao();
     private CategoriesDao categoriesDao = factory.getCategoriesDao();
+    private Long chatId;
 
     public void handleUpdate(Update update, Bot bot) throws SQLException, TelegramApiException {
         org.telegram.telegrambots.api.objects.Message updateMessage = update.getMessage();
@@ -154,5 +155,17 @@ public class Conversation {
         }
         sendMessage.setReplyMarkup(keyboard);
         bot.sendMessage(sendMessage);
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public boolean isPersonal() {
+        return chatId > 0;
     }
 }
