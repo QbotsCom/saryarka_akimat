@@ -22,6 +22,7 @@ public class CategoriesDao {
     public static final int EXECUTORS_IDS_COLUMN_INDEX = 5;
     public static final int AFTER_TEXT_COLUMN_INDEX = 6;
     public static final int DEADLINE_COLUMN_INDEX = 7;
+    public static final int GROUP_ID_COLUMN_INDEX = 8;
     private final Connection connection;
 
     public CategoriesDao(Connection connection) {
@@ -62,7 +63,7 @@ public class CategoriesDao {
         category.setExecutorsIds(rs.getString(EXECUTORS_IDS_COLUMN_INDEX));
         category.setAfterText(rs.getString(AFTER_TEXT_COLUMN_INDEX));
         category.setDeadline(rs.getString(DEADLINE_COLUMN_INDEX));
-        category.setGroupId();//todo
+        category.setGroupId(rs.getInt(GROUP_ID_COLUMN_INDEX));
         if (!childIds.equals("0")) {
             String[] child = childIds.split(",");
             List<Category> childs = new ArrayList<>();

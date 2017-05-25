@@ -128,7 +128,7 @@ public class TicketExecutedCommand extends Command {
                     .setChatId(creatorChatId)
             );
         }
-        int groupId = ticket.getCategory().getGroupId();//todo implement
+        int groupId = ticket.getCategory().getGroupId();
         if (groupId != 0) {
             long groupChatId = groupDao.select(groupId).getChatId();
             String ticketExecutedText = messageDao.getMessageText(209);/*<b>Заявка ticketId отработана</b>. Текст заявки: <i> ticketText</i>*/
@@ -142,8 +142,10 @@ public class TicketExecutedCommand extends Command {
                         .setPhoto(photo)
                 );
             }
-            if (answerText != null) {//todo ihere
-                sendMessage("текст ответа: <i>" + answerText + "</i>", groupChatId, bot);//todo в бд
+            if (answerText != null) {
+                String answerWithText = messageDao.getMessageText(210);/*Текст ответа: <i>answerText</i>*/
+                answerWithText = answerWithText.replace("answerText", answerText);
+                sendMessage(answerWithText, groupChatId, bot);
             }
             if (answerPhoto != null) {
                 bot.sendPhoto(new SendPhoto()
