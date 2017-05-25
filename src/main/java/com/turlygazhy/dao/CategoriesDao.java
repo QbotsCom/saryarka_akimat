@@ -62,6 +62,7 @@ public class CategoriesDao {
         category.setExecutorsIds(rs.getString(EXECUTORS_IDS_COLUMN_INDEX));
         category.setAfterText(rs.getString(AFTER_TEXT_COLUMN_INDEX));
         category.setDeadline(rs.getString(DEADLINE_COLUMN_INDEX));
+        category.setGroupId();//todo
         if (!childIds.equals("0")) {
             String[] child = childIds.split(",");
             List<Category> childs = new ArrayList<>();

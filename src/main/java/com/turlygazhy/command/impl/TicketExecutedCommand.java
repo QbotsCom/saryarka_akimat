@@ -5,7 +5,6 @@ import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
-import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -129,24 +128,22 @@ public class TicketExecutedCommand extends Command {
                     .setChatId(creatorChatId)
             );
         }
-//        int groupId = ticket.getCategory().getGroupId();
-        int groupId = 1;
-        if (groupId != 0) {//todo i here
-//            long groupChatId = groupDao.select(groupId).getChatId();
-            long groupChatId = -234317438;
-            sendMessage("<b>Заявка " + ticket.getId() + " отработана</b>. Текст заявки: <i>" + ticket.getText()+"</i>", groupChatId, bot);
+        int groupId = ticket.getCategory().getGroupId();//todo implement
+        if (groupId != 0) {
+            long groupChatId = groupDao.select(groupId).getChatId();
+            String ticketExecutedText = messageDao.getMessageText(209);/*<b>Заявка ticketId отработана</b>. Текст заявки: <i> ticketText</i>*/
+            ticketExecutedText = ticketExecutedText.replace("ticketId", String.valueOf(ticket.getId()));
+            ticketExecutedText = ticketExecutedText.replace("ticketText", ticket.getText());
+            sendMessage(ticketExecutedText, groupChatId, bot);
             String photo = ticket.getPhoto();
-            if (photo!=null){
+            if (photo != null) {
                 bot.sendPhoto(new SendPhoto()
                         .setChatId(groupChatId)
                         .setPhoto(photo)
                 );
             }
-//            if (answerText == null && answerPhoto == null) {
-//                sendMessage(194, groupChatId, bot);//По Вашей заявке проведена работа
-//            }
-            if (answerText != null) {
-                sendMessage("текст ответа: <i>"+answerText+"</i>", groupChatId, bot);
+            if (answerText != null) {//todo ihere
+                sendMessage("текст ответа: <i>" + answerText + "</i>", groupChatId, bot);//todo в бд
             }
             if (answerPhoto != null) {
                 bot.sendPhoto(new SendPhoto()
