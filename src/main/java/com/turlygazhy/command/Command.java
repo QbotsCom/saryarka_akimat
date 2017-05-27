@@ -60,6 +60,9 @@ public abstract class Command {
             updateMessage = callbackQuery.getMessage();
             updateMessageText = callbackQuery.getData();
             String waitText = messageDao.getMessageText(208);
+            if (chatId == null) {
+                chatId = updateMessage.getChatId();
+            }
             bot.editMessageText(new EditMessageText()
                     .setText(waitText)
                     .setChatId(chatId)
@@ -67,11 +70,10 @@ public abstract class Command {
             );
         } else {
             updateMessageText = updateMessage.getText();
+            if (chatId == null) {
+                chatId = updateMessage.getChatId();
+            }
         }
-    }
-
-    public void initChatId() {
-        chatId = updateMessage.getChatId();
     }
 
     public long getId() {

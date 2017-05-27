@@ -71,7 +71,7 @@ public class TicketInProgressCommand extends Command {
         User answeredExecutor = null;
         for (String executor : executorsIds.split(",")) {
             if (executor.contains(":")) {
-                executor = executor.split(":")[0];// TODO: 15-May-17 hardcode
+                executor = executor.split(":")[0];
             }
             User user = userDao.select(Integer.parseInt(executor));
             if (user.getChatId() != executorChatId) {

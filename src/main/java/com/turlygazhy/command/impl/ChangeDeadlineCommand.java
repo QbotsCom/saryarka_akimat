@@ -34,7 +34,6 @@ public class ChangeDeadlineCommand extends Command {
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
         initMessage(update, bot);
         if (wt == null) {
-            initChatId();
             sendMessage(207, chatId, bot);//send new deadline
             wt = WaitingType.NEW_DEADLINE;
             return false;
@@ -43,11 +42,13 @@ public class ChangeDeadlineCommand extends Command {
             case NEW_DEADLINE:
                 try {
                     check(updateMessageText);
-                    // TODO: 18-May-17 i here
+                    //todo уведомить всех исполнителей
+                    //todo изменить в бд
+                    //todo изменить в гугл диске
                 } catch (DeadlineBeforeNowException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();//todo сказать дата которую вы поставили уже прошла
                 } catch (NewDeadlineDoesNotMatchesException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();//todo не удалось распознать попробуйте ввести еще раз
                 }
         }
         return false;
@@ -62,10 +63,10 @@ public class ChangeDeadlineCommand extends Command {
         String[] split = newDeadline.split(" ");
         String date = split[0];
         String time = split[1];
-        String[] dateSplit = date.split(".");
+        String[] dateSplit = date.split("\\.");
         String day = dateSplit[0];
         String month = dateSplit[1];
-        String year = dateSplit[2];
+        String year = 1 + dateSplit[2];
         String[] timeSplit = time.split(":");
         String hours = timeSplit[0];
         String minutes = timeSplit[1];

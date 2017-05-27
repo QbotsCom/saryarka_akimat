@@ -121,7 +121,6 @@ public class SheetsAdapter {
             writeData(SPREAD_SHEET_ID, "list", 'A', ticket.getGoogleSheetRowId(), ticket);
         } catch (Exception e) {
             e.printStackTrace();
-            //todo log
         }
     }
 
