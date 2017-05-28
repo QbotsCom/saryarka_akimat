@@ -4,3 +4,8 @@
 4) delete target
 5) assembly
 6) check MANIFEST file
+
+
+todo
+INSERT INTO BUTTON VALUES(197, 'Смена исполнителя', 188, null, false, -1)
+INSERT INTO COMMAND VALUES(188,32,0)

@@ -11,7 +11,6 @@ import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -29,7 +28,6 @@ import java.util.List;
 public class FeedbackAkimatCommand extends Command {
     private List<Category> categories;
     private List<Category> children;
-    private int shownCategoriesList = 0;
     private Ticket ticket = new Ticket();
     private Integer categoriesMessageId;
 
@@ -59,7 +57,7 @@ public class FeedbackAkimatCommand extends Command {
                     bot.editMessageText(new EditMessageText()
                             .setText(chooseCategory)
                             .setChatId(chatId)
-                            .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard())
+                            .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard(categories))
                             .setMessageId(updateMessage.getMessageId())
                     );
                     return false;
@@ -69,17 +67,17 @@ public class FeedbackAkimatCommand extends Command {
                     bot.editMessageText(new EditMessageText()
                             .setText(chooseCategory)
                             .setChatId(chatId)
-                            .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard())
+                            .setReplyMarkup((InlineKeyboardMarkup) getCategoriesKeyboard(categories))
                             .setMessageId(updateMessage.getMessageId())
                     );
                     return false;
                 }
                 Category category = null;
                 try {
-                    category = findCategory(updateMessageText);
+                    category = findCategory(updateMessageText, categories);
                 } catch (Exception e) {
                     try {
-                        category = findChild(updateMessageText);
+                        category = findChild(updateMessageText, children);
                     } catch (NullPointerException e1) {
                         throw new CannotHandleUpdateException();
                     }
@@ -170,7 +168,7 @@ public class FeedbackAkimatCommand extends Command {
         Message message = bot.sendMessage(new SendMessage()
                 .setChatId(chatId)
                 .setText(chooseCategory)
-                .setReplyMarkup(getCategoriesKeyboard())
+                .setReplyMarkup(getCategoriesKeyboard(categories))
         );
         categoriesMessageId = message.getMessageId();
         wt = WaitingType.CATEGORY;
@@ -268,15 +266,6 @@ public class FeedbackAkimatCommand extends Command {
         return keyboard;
     }
 
-    private Category findChild(String updateMessageText) {
-        for (Category child : children) {
-            if (child.getName().equals(updateMessageText)) {
-                return child;
-            }
-        }
-        throw new RuntimeException("Cannot find category: " + updateMessageText);
-    }
-
     private ReplyKeyboard getCategoryKeyboard(Category category) throws SQLException {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
@@ -296,70 +285,6 @@ public class FeedbackAkimatCommand extends Command {
         back.setText(buttonDao.getButtonText(19));
         back.setCallbackData(buttonDao.getButtonText(19));
         lastRow.add(back);
-
-        rows.add(lastRow);
-        keyboard.setKeyboard(rows);
-        return keyboard;
-    }
-
-    private Category findCategory(String updateMessageText) {
-        for (Category category : categories) {
-            if (category.getName().equals(updateMessageText)) {
-                return category;
-            }
-        }
-        throw new RuntimeException("Cannot find category with name: " + updateMessageText);
-    }
-
-    private ReplyKeyboard getCategoriesKeyboard() {
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> lastRow = new ArrayList<>();
-        boolean last = false;
-
-        int startCount = (shownCategoriesList - 1) * 4;
-        if (startCount < 0) {
-            startCount = 0;
-        }
-        for (int i = startCount; i < categories.size(); i++) {
-            if (i >= (shownCategoriesList * 4)) {
-                break;
-            }
-            List<InlineKeyboardButton> row = new ArrayList<>();
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            String name = categories.get(i).getName();
-            button.setText(name);
-            button.setCallbackData(name);
-            row.add(button);
-            rows.add(row);
-            if (i == categories.size() - 1) {
-                last = true;
-            }
-        }
-
-        if (shownCategoriesList > 1) {
-            String prev = null;
-            try {
-                prev = messageDao.getMessageText(3);
-            } catch (SQLException ignored) {
-            }
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(prev);
-            button.setCallbackData(prev);
-            lastRow.add(button);
-        }
-
-        if (!last) {
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            String next = null;
-            try {
-                next = messageDao.getMessageText(4);
-            } catch (SQLException ignored) {
-            }
-            button.setText(next);
-            button.setCallbackData(next);
-            lastRow.add(button);
-        }
 
         rows.add(lastRow);
         keyboard.setKeyboard(rows);
