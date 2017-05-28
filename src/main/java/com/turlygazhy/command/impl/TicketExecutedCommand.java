@@ -5,6 +5,7 @@ import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
+import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.objects.CallbackQuery;
@@ -98,8 +99,7 @@ public class TicketExecutedCommand extends Command {
                 String cancelText = buttonDao.getButtonText(195);
                 if (updateMessageText.equals(sendText)) {
                     ticketDao.complete(ticket);
-//                    SheetsAdapter.completeTicket("list", 'E', ticket.getGoogleSheetRowId(), messageDao.getMessageText(203));
-                    //todo
+                    SheetsAdapter.completeTicket("list", 'E', ticket.getGoogleSheetRowId(), messageDao.getMessageText(203));
                     answerToUser(bot);
                     sendMessage(196, chatId, bot);//Ваш ответ передан заявителю
                     return true;

@@ -19,8 +19,8 @@ public class ConnectionPool {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
 
     private static final int CONNECTION_NUMBER = 10;
-//    private static final String JDBC_URL = "jdbc:h2:~/saryarka_akimat23";
-    private static final String JDBC_URL = "jdbc:h2:~/akimat50";
+    private static final String JDBC_URL = "jdbc:h2:~/saryarka_akimat23";
+//    private static final String JDBC_URL = "jdbc:h2:~/akimat50";//todo test
     private static final String DB_LOGIN = "user";
     private static final String DB_PASSWORD = "user";
 

@@ -184,17 +184,16 @@ public class FeedbackAkimatCommand extends Command {
         String[] executors = executorsIds.split(",");
         for (String executor : executors) {
             if (executor.contains(":")) {
-                executor = executor.split(":")[0];// TODO: 05-May-17 hardcode
+                executor = executor.split(":")[0];
             }
             ticket.addExecutor(userDao.select(Integer.parseInt(executor)));
         }
-//        SheetsAdapter.writeTicket(ticket);todo
+        SheetsAdapter.writeTicket(ticket);
 
         for (String executorId : executors) {
             if (executorId.contains(":")) {
                 String[] severalExecutorsIds = executorId.split(":");
-                executorId = severalExecutorsIds[0];//todo hardcode
-                //todo implement it
+                executorId = severalExecutorsIds[0];
             }
             User user = userDao.select(Integer.parseInt(executorId));
             long chatId = user.getChatId();

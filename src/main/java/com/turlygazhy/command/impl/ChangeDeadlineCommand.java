@@ -50,7 +50,7 @@ public class ChangeDeadlineCommand extends Command {
                             User user = userDao.select(Integer.parseInt(executorId));
                             String text = messageDao.getMessageText(211);//deadline was changed
                             text = text.replace("ticketId", String.valueOf(ticket.getId()))
-                                    .replace("ticketText", ticket.getText()) + updateMessageText;
+                                    .replace("ticketText", ticket.getText()) + " " + updateMessageText;
                             sendMessage(text, user.getChatId());
                         } catch (Exception ignored) {
                         }
