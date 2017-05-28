@@ -6,6 +6,7 @@ import com.turlygazhy.dao.impl.*;
 import com.turlygazhy.entity.Message;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.service.BotService;
+import org.telegram.telegrambots.api.methods.ParseMode;
 import org.telegram.telegrambots.api.methods.send.SendContact;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
@@ -52,8 +53,10 @@ public abstract class Command {
     protected org.telegram.telegrambots.api.objects.Message updateMessage;
     protected String updateMessageText;
     protected Long chatId;
+    private Bot bot;
 
     public void initMessage(Update update, Bot bot) throws TelegramApiException, SQLException {
+        this.bot = bot;
         updateMessage = update.getMessage();
         if (updateMessage == null) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -101,6 +104,15 @@ public abstract class Command {
         sendMessage(messageId, chatId, bot, null);
     }
 
+    public void sendMessage(int messageId) throws SQLException, TelegramApiException {
+        String messageText = messageDao.getMessageText(messageId);
+        bot.sendMessage(new SendMessage()
+                .setChatId(chatId)
+                .setText(messageText)
+                .setParseMode(ParseMode.HTML)
+        );
+    }
+
     public void sendMessage(String text, long chatId, TelegramLongPollingBot bot) throws SQLException, TelegramApiException {
         sendMessage(text, chatId, bot, null);
     }
@@ -119,6 +131,14 @@ public abstract class Command {
                     .setPhoneNumber(contact.getPhoneNumber())
             );
         }
+    }
+
+    public void sendMessage(String text, long chatId) throws TelegramApiException {
+        bot.sendMessage(new SendMessage()
+                .setChatId(chatId)
+                .setText(text)
+                .setParseMode(ParseMode.HTML)
+        );
     }
 
     public void sendMessage(String text, long chatId, TelegramLongPollingBot bot, Contact contact) throws SQLException, TelegramApiException {

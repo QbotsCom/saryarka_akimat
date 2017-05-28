@@ -3,10 +3,12 @@ package com.turlygazhy.command.impl;
 import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
 import com.turlygazhy.entity.Ticket;
+import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
 import com.turlygazhy.exception.DeadlineBeforeNowException;
 import com.turlygazhy.exception.NewDeadlineDoesNotMatchesException;
+import com.turlygazhy.google_sheets.SheetsAdapter;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
@@ -42,13 +44,26 @@ public class ChangeDeadlineCommand extends Command {
             case NEW_DEADLINE:
                 try {
                     check(updateMessageText);
-                    //todo уведомить всех исполнителей
-                    //todo изменить в бд
-                    //todo изменить в гугл диске
+                    String executorsIds = ticket.getCategory().getExecutorsIds();
+                    for (String executorId : executorsIds.split(",")) {
+                        try {
+                            User user = userDao.select(Integer.parseInt(executorId));
+                            String text = messageDao.getMessageText(211);//deadline was changed
+                            text = text.replace("ticketId", String.valueOf(ticket.getId()))
+                                    .replace("ticketText", ticket.getText()) + updateMessageText;
+                            sendMessage(text, user.getChatId());
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    SheetsAdapter.updateDeadline(updateMessageText, ticket.getGoogleSheetRowId());
+                    sendMessage(214);//deadline was updated
+                    return true;
                 } catch (DeadlineBeforeNowException e) {
-                    e.printStackTrace();//todo сказать дата которую вы поставили уже прошла
+                    sendMessage(212);//inserted date in past
+                    return false;
                 } catch (NewDeadlineDoesNotMatchesException e) {
-                    e.printStackTrace();//todo не удалось распознать попробуйте ввести еще раз
+                    sendMessage(213);//inserted date is incorrect
+                    return false;
                 }
         }
         return false;
