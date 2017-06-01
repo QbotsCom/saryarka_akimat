@@ -265,29 +265,4 @@ public class FeedbackAkimatCommand extends Command {
         keyboard.setKeyboard(rows);
         return keyboard;
     }
-
-    private ReplyKeyboard getCategoryKeyboard(Category category) throws SQLException {
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> lastRow = new ArrayList<>();
-
-        for (Category child : category.getChilds()) {
-            List<InlineKeyboardButton> row = new ArrayList<>();
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            String name = child.getName();
-            button.setText(name);
-            button.setCallbackData(name);
-            row.add(button);
-            rows.add(row);
-        }
-
-        InlineKeyboardButton back = new InlineKeyboardButton();
-        back.setText(buttonDao.getButtonText(19));
-        back.setCallbackData(buttonDao.getButtonText(19));
-        lastRow.add(back);
-
-        rows.add(lastRow);
-        keyboard.setKeyboard(rows);
-        return keyboard;
-    }
 }

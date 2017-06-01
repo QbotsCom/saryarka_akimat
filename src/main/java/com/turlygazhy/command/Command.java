@@ -62,6 +62,36 @@ public abstract class Command {
     protected Long chatId;
     private Bot bot;
 
+    protected String prevText = "prev";//todo это должно браться из бд
+    protected String nextText = "next";//todo это должно браться из бд
+
+    protected List<InlineKeyboardButton> getNextPrevRows(boolean prev, boolean next) {
+        List<InlineKeyboardButton> row = new ArrayList<>();
+
+        if (prev) {
+            InlineKeyboardButton prevButton = new InlineKeyboardButton();
+            prevButton.setText(prevText);
+            prevButton.setCallbackData(prevText);
+            row.add(prevButton);
+        }
+        if (next) {
+            InlineKeyboardButton nextButton = new InlineKeyboardButton();
+            nextButton.setText(nextText);
+            nextButton.setCallbackData(nextText);
+            row.add(nextButton);
+        }
+
+        return row;
+    }
+
+    protected InlineKeyboardMarkup getNextPrevKeyboard(boolean prev, boolean next) {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        rows.add(getNextPrevRows(prev, next));
+        keyboard.setKeyboard(rows);
+        return keyboard;
+    }
+
     public void initMessage(Update update, Bot bot) throws TelegramApiException, SQLException {
         this.bot = bot;
         updateMessage = update.getMessage();
@@ -84,6 +114,31 @@ public abstract class Command {
                 chatId = updateMessage.getChatId();
             }
         }
+    }
+
+    public ReplyKeyboard getCategoryKeyboard(Category category) throws SQLException {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> lastRow = new ArrayList<>();
+
+        for (Category child : category.getChilds()) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            String name = child.getName();
+            button.setText(name);
+            button.setCallbackData(name);
+            row.add(button);
+            rows.add(row);
+        }
+
+        InlineKeyboardButton back = new InlineKeyboardButton();
+        back.setText(buttonDao.getButtonText(19));
+        back.setCallbackData(buttonDao.getButtonText(19));
+        lastRow.add(back);
+
+        rows.add(lastRow);
+        keyboard.setKeyboard(rows);
+        return keyboard;
     }
 
     public long getId() {

@@ -3,6 +3,7 @@ package com.turlygazhy.command.impl;
 import com.turlygazhy.Bot;
 import com.turlygazhy.command.Command;
 import com.turlygazhy.command.impl.work_around.entity.Category;
+import com.turlygazhy.entity.User;
 import com.turlygazhy.entity.WaitingType;
 import com.turlygazhy.exception.CannotHandleUpdateException;
 import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
@@ -19,7 +20,8 @@ import java.util.List;
 public class ChangeExecutorsCommand extends Command {
     private List<Category> categories;
     private List<Category> children;
-
+    private int shownExecutorslist = 0;
+    private Category category;
 
     @Override
     public boolean execute(Update update, Bot bot) throws SQLException, TelegramApiException {
@@ -71,10 +73,59 @@ public class ChangeExecutorsCommand extends Command {
                     sendMessage(category.getAfterText(), chatId, bot);
                 }
                 if (category.hasChild()) {
+                    bot.editMessageText(new EditMessageText()
+                            .setChatId(chatId)
+                            .setText("Choose category")
+                            .setMessageId(updateMessage.getMessageId())
+                            .setReplyMarkup((InlineKeyboardMarkup) getCategoryKeyboard(category))
+                    );
                     children = category.getChilds();
                     return false;
                 }
+                this.category = category;
+                showCategoryExecutors(category);
+                wt = WaitingType.CHANGE_EXECUTOR;
+                return false;
+            case CHANGE_EXECUTOR:
+                if (updateMessageText.equals(nextText)){
+                    shownExecutorslist++;
+                    showCategoryExecutors(this.category);
+                    return false;
+                }
+                if (updateMessageText.equals(prevText)){
+                    shownExecutorslist--;
+                    showCategoryExecutors(this.category);
+                    return false;
+                    //todo ihere
+                }
+                //todo проверить это удалить?
+                //todo проверить это изменить?
+                //todo check for next and prev
         }
         return false;
     }
+
+    private void showCategoryExecutors(Category category) throws SQLException, TelegramApiException {
+        boolean prev = true;
+        boolean next = true;
+        String text = "/add_new";//todo все должно быть на русском и браться из бд
+        String[] executorIds = category.getExecutorsIds().split(",");
+        int listSize = 4;
+        int i = shownExecutorslist * listSize;
+        if (i == 0) {
+            prev = false;
+        }
+        int idsLength = executorIds.length;
+        for (; i < idsLength; i++) {
+            User user = userDao.select(Integer.parseInt(executorIds[i]));
+            int userId = user.getId();
+            text = text + userId + ". " + user.getUserName() + "\n/change" + userId + "\n/delete" + userId;
+        }
+        if (idsLength == (i + 1)) {
+            next = false;
+        }
+        sendMessage(text, getNextPrevKeyboard(prev, next));
+    }
+
+
 }
